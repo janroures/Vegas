@@ -1,0 +1,17 @@
+//
+//  AppDelegate.h
+//  ChatCode
+//
+//  Created by Karim Mourra on 10/31/14.
+//  Copyright (c) 2014 Karim. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
+
+@property (strong, nonatomic) UIWindow *window;
+
+
+@end
+
