@@ -8,6 +8,8 @@
 
 #import "KJDLoginViewController.h"
 #import "KJDChatRoomViewController.h"
+#import <RNBlurModalView.h>
+
 
 @interface KJDLoginViewController ()
 
@@ -35,9 +37,10 @@
 - (void)setupLabel{
     self.enterLabel = [[UILabel alloc] init];
     self.enterLabel.text = @"Enter Chat ID:";
-//    self.enterLabel.backgroundColor = [UIColor blackColor];
+    //    self.enterLabel.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.enterLabel];
     self.enterLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.enterLabel setTextAlignment:NSTextAlignmentCenter];
     
     NSLayoutConstraint *enterLabelX = [NSLayoutConstraint constraintWithItem:self.enterLabel
                                                                    attribute:NSLayoutAttributeCenterX
@@ -60,7 +63,7 @@
                                                                        relatedBy:NSLayoutRelationEqual
                                                                           toItem:self.view
                                                                        attribute:NSLayoutAttributeWidth
-                                                                      multiplier:0.33
+                                                                      multiplier:0.80
                                                                         constant:0.0];
     
     NSLayoutConstraint *enterLabelHeight = [NSLayoutConstraint constraintWithItem:self.enterLabel
@@ -80,6 +83,7 @@
     [self.view addSubview:self.chatCodeField];
     self.chatCodeField.translatesAutoresizingMaskIntoConstraints = NO;
     [self.chatCodeField setBorderStyle:UITextBorderStyleLine];
+    self.chatCodeField.textAlignment=NSTextAlignmentCenter;
     
     NSLayoutConstraint *chatCodeFieldX = [NSLayoutConstraint constraintWithItem:self.chatCodeField
                                                                       attribute:NSLayoutAttributeCenterX
@@ -102,7 +106,7 @@
                                                                           relatedBy:NSLayoutRelationEqual
                                                                              toItem:self.enterLabel
                                                                           attribute:NSLayoutAttributeWidth
-                                                                         multiplier:1.0
+                                                                         multiplier:0.66
                                                                            constant:0.0];
     
     NSLayoutConstraint *chatCodeFieldHeight = [NSLayoutConstraint constraintWithItem:self.chatCodeField
@@ -126,45 +130,50 @@
     self.enterButton.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *enterButtonX = [NSLayoutConstraint constraintWithItem:self.enterButton
-                                                                      attribute:NSLayoutAttributeCenterX
-                                                                      relatedBy:NSLayoutRelationEqual
-                                                                         toItem:self.chatCodeField
-                                                                      attribute:NSLayoutAttributeCenterX
-                                                                     multiplier:1.0
-                                                                       constant:0.0];
+                                                                    attribute:NSLayoutAttributeCenterX
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.chatCodeField
+                                                                    attribute:NSLayoutAttributeCenterX
+                                                                   multiplier:1.0
+                                                                     constant:0.0];
     
     NSLayoutConstraint *enterButtonTop = [NSLayoutConstraint constraintWithItem:self.enterButton
-                                                                        attribute:NSLayoutAttributeTop
-                                                                        relatedBy:NSLayoutRelationEqual
-                                                                           toItem:self.chatCodeField
-                                                                        attribute:NSLayoutAttributeBottom
-                                                                       multiplier:1.0
-                                                                         constant:10.0];
+                                                                      attribute:NSLayoutAttributeTop
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.chatCodeField
+                                                                      attribute:NSLayoutAttributeBottom
+                                                                     multiplier:1.0
+                                                                       constant:10.0];
     
     NSLayoutConstraint *enterButtonWidth = [NSLayoutConstraint constraintWithItem:self.enterButton
-                                                                          attribute:NSLayoutAttributeWidth
-                                                                          relatedBy:NSLayoutRelationEqual
-                                                                             toItem:self.chatCodeField
-                                                                          attribute:NSLayoutAttributeWidth
-                                                                         multiplier:1.0
-                                                                           constant:0.0];
+                                                                        attribute:NSLayoutAttributeWidth
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.chatCodeField
+                                                                        attribute:NSLayoutAttributeWidth
+                                                                       multiplier:1.0
+                                                                         constant:0.0];
     
     NSLayoutConstraint *enterButtonHeight = [NSLayoutConstraint constraintWithItem:self.enterButton
-                                                                           attribute:NSLayoutAttributeHeight
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:self.chatCodeField
-                                                                           attribute:NSLayoutAttributeHeight
-                                                                          multiplier:1.0
-                                                                            constant:0.0];
+                                                                         attribute:NSLayoutAttributeHeight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.chatCodeField
+                                                                         attribute:NSLayoutAttributeHeight
+                                                                        multiplier:1.0
+                                                                          constant:0.0];
     
     [self.view addConstraints:@[enterButtonX, enterButtonTop, enterButtonWidth, enterButtonHeight]];
 }
 
-- (void)enterButtonTapped
-{
-    KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
-    destinationViewController.firebaseURL = self.chatCodeField.text;
-    [self.navigationController pushViewController:destinationViewController animated:YES];
+- (void)enterButtonTapped{
+    if ([self.chatCodeField.text length]<4) {
+        RNBlurModalView *modal = [[RNBlurModalView alloc] initWithViewController:self title:@"Invalid code!" message:@"The code must be at least 4 characters long"];
+        [modal show];
+        self.chatCodeField.text=@"";
+    }else{
+        KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
+        destinationViewController.firebaseRoomURL = self.chatCodeField.text;
+        [self.navigationController pushViewController:destinationViewController animated:YES];
+    }
 }
 
 @end

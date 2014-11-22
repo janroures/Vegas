@@ -43,7 +43,6 @@
 }
 
 -(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)())completionBlock{
-    NSLog(@"Just got message: %@", snapshot.value);
     if ([snapshot.value isKindOfClass:[NSDictionary class]]) {
         [self.messages addObject:snapshot.value[@"message"]];
     }else if ([snapshot.value isKindOfClass:[NSString class]]){
@@ -72,17 +71,14 @@
     }
 }
 
--(void)setViewMovedUp:(BOOL)movedUp{
+-(void)setViewMovedUp:(BOOL)moveUp{
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3]; // if you want to slide up the view
     CGRect rect = self.view.frame;
-    if (movedUp){
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+    if (moveUp){
         rect.origin.y -= self.keyBoardFrame.size.height;
     //        rect.size.height += self.keyBoardFrame.size.height;
     }else{
-        // revert back to the normal state.
         rect.origin.y += self.keyBoardFrame.size.height;
     //        rect.size.height -= self.keyBoardFrame.size.height;
     }
@@ -100,12 +96,8 @@
     // Dispose of any resources that can be recreated.
 }
 //
-- (void)setupFirebase
-{
-    //    [self.firebaseURL appendFormat:@"%@", self.chatroomString];
-    //    self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
-    
-    self.firebaseURL = [NSString stringWithFormat:@"https://boiling-torch-9946.firebaseio.com/%@", self.firebaseURL];
+- (void)setupFirebase{
+    self.firebaseURL = [NSString stringWithFormat:@"https://boiling-torch-9946.firebaseio.com/%@", self.firebaseRoomURL];
     self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
     
     [self.firebase observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
@@ -119,6 +111,12 @@
     [self setupTableView];
     [self setupTextField];
     [self setupSendButton];
+    [self setupNavigationBar];
+}
+
+-(void)setupNavigationBar{
+    [self.navigationController setNavigationBarHidden:NO];
+    [self.navigationController.navigationBar.topItem setTitle:self.firebaseRoomURL];
 }
 
 - (void)setupTableView
