@@ -14,13 +14,13 @@
 
 @property (strong, nonatomic) UITextField *inputTextField;
 @property (strong, nonatomic) UITableView *tableView;
-@property(strong,nonatomic)UILabel *label;
+@property (strong,nonatomic) UILabel *label;
 
 @property (strong, nonatomic) UIButton *sendButton;
-@property(strong,nonatomic)Firebase *firebase;
-@property(strong,nonatomic)NSString *firebaseURL;
-@property(strong,nonatomic)KJDUser *user;
-@property(nonatomic)CGRect keyBoardFrame;
+@property (strong, nonatomic) Firebase *firebase;
+
+
+@property (nonatomic) CGRect keyBoardFrame;
 
 @property(strong,nonatomic)NSMutableArray *messages;
 
@@ -98,7 +98,7 @@
     //    [self.firebaseURL appendFormat:@"%@", self.chatroomString];
     //    self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
     
-    self.firebaseURL = @"https://boiling-torch-9946.firebaseio.com/11111";
+    self.firebaseURL = [NSString stringWithFormat:@"https://boiling-torch-9946.firebaseio.com/%@", self.firebaseURL];
     self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
     
     [self.firebase observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {

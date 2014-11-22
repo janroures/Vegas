@@ -8,7 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+@class KJDUser;
+
 @interface KJDChatRoomViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
+
+@property (strong, nonatomic) KJDUser *user;
+@property (strong, nonatomic) NSString *firebaseURL;
 
 @end
 

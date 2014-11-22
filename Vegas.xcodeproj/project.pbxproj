@@ -11,8 +11,9 @@
 		0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */; };
 		0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */; };
 		0BFE380B1A1FE1C200EA4D28 /* KJDUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38041A1FE1C200EA4D28 /* KJDUser.m */; };
-		0BFE380C1A1FE1C200EA4D28 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38051A1FE1C200EA4D28 /* main.m */; };
 		0BFE38101A1FE1EB00EA4D28 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */; };
+		B19C3A341A1FE748002868B1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B19C3A331A1FE748002868B1 /* main.m */; };
+		B19C3A371A1FE79E002868B1 /* KJDLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B19C3A361A1FE79E002868B1 /* KJDLoginViewController.m */; };
 		BD71407CCB2854C8BCF55FE3 /* libPods-Vegas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E89D24A220E31E9A949BD9 /* libPods-Vegas.a */; };
 /* End PBXBuildFile section */
 
@@ -29,7 +30,6 @@
 /* Begin PBXFileReference section */
 		0BB036AF1A1FE0EE0021CCF4 /* Vegas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vegas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BB036B31A1FE0EE0021CCF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0BB036B41A1FE0EE0021CCF4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0BB036C81A1FE0EE0021CCF4 /* VegasTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VegasTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BB036CD1A1FE0EE0021CCF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BB036CE1A1FE0EE0021CCF4 /* VegasTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VegasTests.m; sourceTree = "<group>"; };
@@ -39,11 +39,13 @@
 		0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomViewController.m; sourceTree = "<group>"; };
 		0BFE38031A1FE1C200EA4D28 /* KJDUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDUser.h; sourceTree = "<group>"; };
 		0BFE38041A1FE1C200EA4D28 /* KJDUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDUser.m; sourceTree = "<group>"; };
-		0BFE38051A1FE1C200EA4D28 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0BFE380E1A1FE1EB00EA4D28 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		41E89D24A220E31E9A949BD9 /* libPods-Vegas.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Vegas.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DCB63D569D4265F5E712AAA /* Pods-Vegas.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vegas.release.xcconfig"; path = "Pods/Target Support Files/Pods-Vegas/Pods-Vegas.release.xcconfig"; sourceTree = "<group>"; };
+		B19C3A331A1FE748002868B1 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B19C3A351A1FE79E002868B1 /* KJDLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDLoginViewController.h; sourceTree = "<group>"; };
+		B19C3A361A1FE79E002868B1 /* KJDLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDLoginViewController.m; sourceTree = "<group>"; };
 		CB5DAB915AC2BF4B352376B8 /* Pods-Vegas.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vegas.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Vegas/Pods-Vegas.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,16 +91,11 @@
 		0BB036B11A1FE0EE0021CCF4 /* Vegas */ = {
 			isa = PBXGroup;
 			children = (
+				B19C3A301A1FE6F9002868B1 /* View Controller */,
+				B19C3A2E1A1FE6C9002868B1 /* Model */,
 				0BFE37FC1A1FE1C200EA4D28 /* Base.lproj */,
 				0BFE380E1A1FE1EB00EA4D28 /* AppDelegate.h */,
 				0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */,
-				0BFE37FF1A1FE1C200EA4D28 /* KJDChatRoom.h */,
-				0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */,
-				0BFE38011A1FE1C200EA4D28 /* KJDChatRoomViewController.h */,
-				0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */,
-				0BFE38031A1FE1C200EA4D28 /* KJDUser.h */,
-				0BFE38041A1FE1C200EA4D28 /* KJDUser.m */,
-				0BFE38051A1FE1C200EA4D28 /* main.m */,
 				0BB036B21A1FE0EE0021CCF4 /* Supporting Files */,
 			);
 			path = Vegas;
@@ -108,7 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				0BB036B31A1FE0EE0021CCF4 /* Info.plist */,
-				0BB036B41A1FE0EE0021CCF4 /* main.m */,
+				B19C3A331A1FE748002868B1 /* main.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -144,6 +141,28 @@
 				5DCB63D569D4265F5E712AAA /* Pods-Vegas.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		B19C3A2E1A1FE6C9002868B1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0BFE38031A1FE1C200EA4D28 /* KJDUser.h */,
+				0BFE38041A1FE1C200EA4D28 /* KJDUser.m */,
+				0BFE37FF1A1FE1C200EA4D28 /* KJDChatRoom.h */,
+				0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		B19C3A301A1FE6F9002868B1 /* View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				0BFE38011A1FE1C200EA4D28 /* KJDChatRoomViewController.h */,
+				0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */,
+				B19C3A351A1FE79E002868B1 /* KJDLoginViewController.h */,
+				B19C3A361A1FE79E002868B1 /* KJDLoginViewController.m */,
+			);
+			name = "View Controller";
 			sourceTree = "<group>";
 		};
 		C7D98B8274A492CDF715EF39 /* Frameworks */ = {
@@ -286,10 +305,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0BFE380C1A1FE1C200EA4D28 /* main.m in Sources */,
 				0BFE380B1A1FE1C200EA4D28 /* KJDUser.m in Sources */,
 				0BFE38101A1FE1EB00EA4D28 /* AppDelegate.m in Sources */,
 				0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */,
+				B19C3A341A1FE748002868B1 /* main.m in Sources */,
+				B19C3A371A1FE79E002868B1 /* KJDLoginViewController.m in Sources */,
 				0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
