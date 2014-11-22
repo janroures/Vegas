@@ -8,7 +8,6 @@
 
 #import "KJDChatRoomViewController.h"
 #import <Firebase/Firebase.h>
-#import "KJDUser.h"
 
 @interface KJDChatRoomViewController ()
 
@@ -18,8 +17,6 @@
 
 @property (strong, nonatomic) UIButton *sendButton;
 @property(strong,nonatomic)Firebase *firebase;
-@property(strong,nonatomic)NSString *firebaseURL;
-@property(strong,nonatomic)KJDUser *user;
 @property(nonatomic)CGRect keyBoardFrame;
 
 @property(strong,nonatomic)NSMutableArray *messages;
@@ -83,11 +80,11 @@
         // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
         rect.origin.y -= self.keyBoardFrame.size.height;
-        //        rect.size.height += self.keyBoardFrame.size.height;
+    //        rect.size.height += self.keyBoardFrame.size.height;
     }else{
         // revert back to the normal state.
         rect.origin.y += self.keyBoardFrame.size.height;
-        //        rect.size.height -= self.keyBoardFrame.size.height;
+    //        rect.size.height -= self.keyBoardFrame.size.height;
     }
     self.view.frame = rect;
     [UIView commitAnimations];
