@@ -43,7 +43,17 @@
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-    [self.tableView setUserInteractionEnabled:NO];
+}
+
+-(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)())completionBlock{
+    NSLog(@"Just got message: %@", snapshot.value);
+    if ([snapshot.value isKindOfClass:[NSDictionary class]]) {
+        [self.messages addObject:snapshot.value[@"message"]];
+    }else if ([snapshot.value isKindOfClass:[NSString class]]){
+        NSLog(@"%@", snapshot.value);
+        [self.messages addObject:snapshot.value];
+    }
+    completionBlock();
 }
 
 -(void)keyboardWillShow:(NSNotification *)notification{
@@ -73,11 +83,11 @@
         // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
         rect.origin.y -= self.keyBoardFrame.size.height;
-//        rect.size.height += self.keyBoardFrame.size.height;
+        //        rect.size.height += self.keyBoardFrame.size.height;
     }else{
         // revert back to the normal state.
         rect.origin.y += self.keyBoardFrame.size.height;
-//        rect.size.height -= self.keyBoardFrame.size.height;
+        //        rect.size.height -= self.keyBoardFrame.size.height;
     }
     self.view.frame = rect;
     [UIView commitAnimations];
@@ -95,25 +105,11 @@
 //
 - (void)setupFirebase
 {
-    //    [self.firebaseURL appendFormat:@"%@", self.chatroomString];
-    //    self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
-    
     self.firebaseURL = @"https://boiling-torch-9946.firebaseio.com/11111";
     self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
     
-    [self.firebase observeEventType:FEventTypeChildChanged withBlock:^(FDataSnapshot *snapshot) {
-        
-        [self.messages addObject:snapshot.value];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            NSLog(@"Just got message: %@", snapshot.value);
-            if ([snapshot.value isKindOfClass:[NSDictionary class]]) {
-                [self.messages addObject:snapshot.value[@"message"]];
-            }
-            else if ([snapshot.value isKindOfClass:[NSString class]])
-            {
-                NSLog(@"%@", snapshot.value);
-                [self.messages addObject:snapshot.value];
-            }
+    [self.firebase observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        [self fetchMessagesFromCloud:snapshot withBlock:^{
             [self.tableView reloadData];
         }];
     }];
@@ -124,7 +120,6 @@
     [self setupTextField];
     [self setupSendButton];
 }
-
 
 - (void)setupTableView
 {
@@ -165,13 +160,8 @@
 - (void)sendButtonTapped
 {
     NSLog(@"Button Tapped");
-    
     NSString *message = self.inputTextField.text;
-    
-    NSString *name = self.user.name;
-    [self.firebase setValue:@{@"message":message}];
-    
-    
+    [self.firebase setValue:message];
     self.inputTextField.text = @"";
     [self.view endEditing:YES];
 }
@@ -264,16 +254,17 @@
     [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return 50;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return [self.messages count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    cell.textLabel.text=[NSString stringWithFormat:@"%ld", (long)indexPath.row];
+    if (![self.messages count]==0) {
+        NSString *message=self.messages[indexPath.row];
+        cell.textLabel.text=message;
+    }
     
     return cell;
 }

@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B42BD6F1A1FE80200FCEFE7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB036B41A1FE0EE0021CCF4 /* main.m */; };
 		0BB036CF1A1FE0EE0021CCF4 /* VegasTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB036CE1A1FE0EE0021CCF4 /* VegasTests.m */; };
 		0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */; };
 		0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */; };
 		0BFE380B1A1FE1C200EA4D28 /* KJDUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38041A1FE1C200EA4D28 /* KJDUser.m */; };
-		0BFE380C1A1FE1C200EA4D28 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38051A1FE1C200EA4D28 /* main.m */; };
 		0BFE38101A1FE1EB00EA4D28 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */; };
 		BD71407CCB2854C8BCF55FE3 /* libPods-Vegas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E89D24A220E31E9A949BD9 /* libPods-Vegas.a */; };
 /* End PBXBuildFile section */
@@ -39,7 +39,6 @@
 		0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomViewController.m; sourceTree = "<group>"; };
 		0BFE38031A1FE1C200EA4D28 /* KJDUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDUser.h; sourceTree = "<group>"; };
 		0BFE38041A1FE1C200EA4D28 /* KJDUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDUser.m; sourceTree = "<group>"; };
-		0BFE38051A1FE1C200EA4D28 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0BFE380E1A1FE1EB00EA4D28 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		41E89D24A220E31E9A949BD9 /* libPods-Vegas.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Vegas.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,6 +65,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B42BD6D1A1FE76D00FCEFE7 /* View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				0BFE38011A1FE1C200EA4D28 /* KJDChatRoomViewController.h */,
+				0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */,
+			);
+			name = "View Controller";
+			sourceTree = "<group>";
+		};
+		0B42BD6E1A1FE77700FCEFE7 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0BFE37FF1A1FE1C200EA4D28 /* KJDChatRoom.h */,
+				0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */,
+				0BFE38031A1FE1C200EA4D28 /* KJDUser.h */,
+				0BFE38041A1FE1C200EA4D28 /* KJDUser.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		0BB036A61A1FE0EE0021CCF4 = {
 			isa = PBXGroup;
 			children = (
@@ -89,17 +108,12 @@
 		0BB036B11A1FE0EE0021CCF4 /* Vegas */ = {
 			isa = PBXGroup;
 			children = (
-				0BFE37FC1A1FE1C200EA4D28 /* Base.lproj */,
+				0B42BD6E1A1FE77700FCEFE7 /* Model */,
+				0B42BD6D1A1FE76D00FCEFE7 /* View Controller */,
 				0BFE380E1A1FE1EB00EA4D28 /* AppDelegate.h */,
 				0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */,
-				0BFE37FF1A1FE1C200EA4D28 /* KJDChatRoom.h */,
-				0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */,
-				0BFE38011A1FE1C200EA4D28 /* KJDChatRoomViewController.h */,
-				0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */,
-				0BFE38031A1FE1C200EA4D28 /* KJDUser.h */,
-				0BFE38041A1FE1C200EA4D28 /* KJDUser.m */,
-				0BFE38051A1FE1C200EA4D28 /* main.m */,
 				0BB036B21A1FE0EE0021CCF4 /* Supporting Files */,
+				0BFE37FC1A1FE1C200EA4D28 /* Base.lproj */,
 			);
 			path = Vegas;
 			sourceTree = "<group>";
@@ -286,7 +300,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0BFE380C1A1FE1C200EA4D28 /* main.m in Sources */,
+				0B42BD6F1A1FE80200FCEFE7 /* main.m in Sources */,
 				0BFE380B1A1FE1C200EA4D28 /* KJDUser.m in Sources */,
 				0BFE38101A1FE1EB00EA4D28 /* AppDelegate.m in Sources */,
 				0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */,
