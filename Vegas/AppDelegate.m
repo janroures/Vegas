@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "KJDChatRoomViewController.h"
+#import "KJDLoginViewController.h"
 
 
 @implementation AppDelegate
@@ -23,7 +23,7 @@
 
 - (void)setupApp:(UIApplication *)application
 {
-    KJDChatRoomViewController *initialVC = [[KJDChatRoomViewController alloc] init];
+    KJDLoginViewController *initialVC = [[KJDLoginViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:initialVC];
     [self.window setRootViewController:navController];
 }
