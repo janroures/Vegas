@@ -54,9 +54,9 @@
                                                                      attribute:NSLayoutAttributeTop
                                                                      relatedBy:NSLayoutRelationEqual
                                                                         toItem:self.view
-                                                                     attribute:NSLayoutAttributeTop
-                                                                    multiplier:1.0
-                                                                      constant:250.0];
+                                                                     attribute:NSLayoutAttributeCenterY
+                                                                    multiplier:0.40
+                                                                      constant:0.0];
     
     NSLayoutConstraint *enterLabelWidth = [NSLayoutConstraint constraintWithItem:self.enterLabel
                                                                        attribute:NSLayoutAttributeWidth

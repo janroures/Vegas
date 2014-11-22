@@ -42,6 +42,17 @@
                                                object:nil];
 }
 
+- (void)setupFirebase{
+    self.firebaseURL = [NSString stringWithFormat:@"https://boiling-torch-9946.firebaseio.com/%@", self.firebaseRoomURL];
+    self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
+    
+    [self.firebase observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        [self fetchMessagesFromCloud:snapshot withBlock:^{
+            [self.tableView reloadData];
+        }];
+    }];
+}
+
 -(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)())completionBlock{
     if ([snapshot.value isKindOfClass:[NSDictionary class]]) {
         [self.messages addObject:snapshot.value[@"message"]];
@@ -73,16 +84,22 @@
 
 -(void)setViewMovedUp:(BOOL)moveUp{
     [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
-    CGRect rect = self.view.frame;
+    [UIView setAnimationDuration:0.3];
+    CGRect superViewRect = self.view.frame;
+    
+    UIEdgeInsets inset = UIEdgeInsetsMake(self.keyBoardFrame.size.height, 0, 0, 0);
+    UIEdgeInsets afterInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
+    
     if (moveUp){
-        rect.origin.y -= self.keyBoardFrame.size.height;
-    //        rect.size.height += self.keyBoardFrame.size.height;
+        self.tableView.contentInset = inset;
+        superViewRect.origin.y -= self.keyBoardFrame.size.height;
+//        rect.size.height += self.keyBoardFrame.size.height;
     }else{
-        rect.origin.y += self.keyBoardFrame.size.height;
-    //        rect.size.height -= self.keyBoardFrame.size.height;
+        self.tableView.contentInset = afterInset;
+        superViewRect.origin.y += self.keyBoardFrame.size.height;
+//        rect.size.height -= self.keyBoardFrame.size.height;
     }
-    self.view.frame = rect;
+    self.view.frame = superViewRect;
     [UIView commitAnimations];
 }
 
@@ -95,23 +112,12 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-//
-- (void)setupFirebase{
-    self.firebaseURL = [NSString stringWithFormat:@"https://boiling-torch-9946.firebaseio.com/%@", self.firebaseRoomURL];
-    self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
-    
-    [self.firebase observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-        [self fetchMessagesFromCloud:snapshot withBlock:^{
-            [self.tableView reloadData];
-        }];
-    }];
-}
 
 - (void)setupViewsAndConstraints {
+    [self setupNavigationBar];
     [self setupTableView];
     [self setupTextField];
     [self setupSendButton];
-    [self setupNavigationBar];
 }
 
 -(void)setupNavigationBar{
@@ -134,7 +140,7 @@
                                                                        toItem:self.view
                                                                     attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:0.0];
+                                                                     constant:self.navigationController.navigationBar.frame.size.height+20.0];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                        attribute:NSLayoutAttributeBottom
@@ -155,8 +161,7 @@
     [self.view addConstraints:@[tableViewTop, tableViewBottom, tableViewWidth]];
 }
 
-- (void)sendButtonTapped
-{
+- (void)sendButtonTapped{
     NSLog(@"Button Tapped");
     NSString *message = self.inputTextField.text;
     [self.firebase setValue:message];
@@ -164,8 +169,7 @@
     [self.view endEditing:YES];
 }
 
-- (void)setupSendButton
-{
+- (void)setupSendButton{
     self.sendButton = [[UIButton alloc] init];
     [self.view addSubview:self.sendButton];
     self.sendButton.backgroundColor = [UIColor blueColor];
@@ -253,16 +257,24 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return [self.messages count];
+    //test data
+    
+    return 15;
+    
+//    return [self.messages count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    if (![self.messages count]==0) {
-        NSString *message=self.messages[indexPath.row];
-        cell.textLabel.text=message;
-    }
+    //test data
+    
+    cell.textLabel.text=[NSString stringWithFormat:@"asdasdasd %ld", (long)indexPath.row];
+    
+//    if (![self.messages count]==0) {
+//        NSString *message=self.messages[indexPath.row];
+//        cell.textLabel.text=message;
+//    }
     
     return cell;
 }
