@@ -15,10 +15,11 @@
 @property(strong,nonatomic)NSString *firebaseURL;
 @property(strong,nonatomic)Firebase *firebase;
 
-+ (instancetype)sharedChatRoom;
+//+ (instancetype)sharedChatRoom;
 
+-(instancetype)initWithUser:(KJDUser *)user;
 -(instancetype)init;
 
-- (void)setupFirebaseWithCompletionBlock:(void (^)(BOOL completed))completionBlock;
+-(void)setupFirebaseWithCompletionBlock:(void (^)(BOOL completed))completionBlock;
 -(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)(NSMutableArray *messages))completionBlock;
 @end

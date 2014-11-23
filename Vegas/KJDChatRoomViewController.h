@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 #import "KJDUser.h"
+#import "KJDChatRoom.h"
 
 @class KJDUser;
 
@@ -12,6 +13,7 @@
 @property (strong, nonatomic) KJDUser *user;
 @property (strong, nonatomic) NSString *firebaseRoomURL;
 @property (strong,nonatomic)NSString *firebaseURL;
+@property (strong,nonatomic) KJDChatRoom *chatRoom;
 
 @end
 

@@ -3,18 +3,14 @@
 //  Vegas
 
 #import "KJDChatRoomViewController.h"
-#import <Firebase/Firebase.h>
-#import "KJDChatRoom.h"
 
 @interface KJDChatRoomViewController ()
 
 @property (strong, nonatomic) UITextField *inputTextField;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong,nonatomic) UILabel *label;
-@property (strong,nonatomic) KJDChatRoom *chatRoom;
 
 @property (strong, nonatomic) UIButton *sendButton;
-@property(strong,nonatomic)Firebase *firebase;
 @property(nonatomic)CGRect keyBoardFrame;
 
 @property(strong,nonatomic)NSMutableArray *messages;
@@ -27,7 +23,7 @@
     [super viewDidLoad];
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
-    self.chatRoom=[KJDChatRoom sharedChatRoom];
+//    self.chatRoom=[KJDChatRoom sharedChatRoom];
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
             self.messages=self.chatRoom.messages;
@@ -102,7 +98,7 @@
 
 -(void)setupNavigationBar{
     [self.navigationController setNavigationBarHidden:NO];
-    [self.navigationController.navigationBar.topItem setTitle:self.firebaseRoomURL];
+    [self.navigationController.navigationBar.topItem setTitle:self.chatRoom.firebaseRoomURL];
 }
 
 - (void)setupTableView
@@ -144,7 +140,7 @@
 - (void)sendButtonTapped{
     NSString *message = self.inputTextField.text;
     [self.chatRoom.firebase setValue:@{@"user":self.user.name,
-                              @"message":message}];
+                                    @"message":message}];
     self.inputTextField.text = @"";
     [self.view endEditing:YES];
 }

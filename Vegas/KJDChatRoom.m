@@ -9,23 +9,27 @@
 
 @implementation KJDChatRoom
 
-+ (instancetype)sharedChatRoom {
-    static KJDChatRoom *_sharedChatRoom = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _sharedChatRoom = [[KJDChatRoom alloc] init];
-    });
-    
-    return _sharedChatRoom;
-}
+//+ (instancetype)sharedChatRoom {
+//    static KJDChatRoom *_sharedChatRoom = nil;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        _sharedChatRoom = [[KJDChatRoom alloc] init];
+//    });
+//    
+//    return _sharedChatRoom;
+//}
 
--(instancetype)init{
+-(instancetype)initWithUser:(KJDUser *)user{
     self=[super init];
     if (self) {
-        _user=nil;
+        _user=user;
         _messages=[[NSMutableArray alloc]init];
     }
     return self;
+}
+
+-(instancetype)init{
+    return [self initWithUser:self.user];
 }
 
 -(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)(NSMutableArray *messages))completionBlock{

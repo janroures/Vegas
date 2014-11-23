@@ -168,10 +168,11 @@
         [modal show];
         self.chatCodeField.text=@"";
     }else{
-        self.chatRoom=[KJDChatRoom sharedChatRoom];
+        self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
         self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
         self.chatRoom.user=self.user;
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
+        destinationViewController.chatRoom=self.chatRoom;
         [self.navigationController pushViewController:destinationViewController animated:YES];
     }
 }
