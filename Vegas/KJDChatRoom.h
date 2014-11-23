@@ -15,8 +15,6 @@
 @property(strong,nonatomic)NSString *firebaseURL;
 @property(strong,nonatomic)Firebase *firebase;
 
-//+ (instancetype)sharedChatRoom;
-
 -(instancetype)initWithUser:(KJDUser *)user;
 -(instancetype)init;
 

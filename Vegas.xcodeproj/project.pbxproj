@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B42BD6F1A1FE80200FCEFE7 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */; };
 		0BB036CF1A1FE0EE0021CCF4 /* VegasTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB036CE1A1FE0EE0021CCF4 /* VegasTests.m */; };
 		0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */; };
 		0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */; };
@@ -29,6 +30,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomTableViewCell.h; sourceTree = "<group>"; };
+		0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomTableViewCell.m; sourceTree = "<group>"; };
 		0BB036AF1A1FE0EE0021CCF4 /* Vegas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vegas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BB036B31A1FE0EE0021CCF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BB036C81A1FE0EE0021CCF4 /* VegasTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VegasTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +95,8 @@
 		0BB036B11A1FE0EE0021CCF4 /* Vegas */ = {
 			isa = PBXGroup;
 			children = (
+				0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCell.h */,
+				0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */,
 				B19C3A301A1FE6F9002868B1 /* View Controller */,
 				B19C3A2E1A1FE6C9002868B1 /* Model */,
 				0BB036B21A1FE0EE0021CCF4 /* Supporting Files */,
@@ -312,6 +317,7 @@
 				0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */,
 				B19C3A341A1FE748002868B1 /* main.m in Sources */,
 				B19C3A371A1FE79E002868B1 /* KJDLoginViewController.m in Sources */,
+				0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCell.m in Sources */,
 				0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

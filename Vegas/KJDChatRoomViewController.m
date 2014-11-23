@@ -3,15 +3,18 @@
 //  Vegas
 
 #import "KJDChatRoomViewController.h"
+#import <QuartzCore/QuartzCore.h>
+#import "KJDChatRoomTableViewCell.h"
 
 @interface KJDChatRoomViewController ()
 
 @property (strong, nonatomic) UITextField *inputTextField;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong,nonatomic) UILabel *label;
+@property (strong,nonatomic) KJDChatRoomTableViewCell *cell;
 
 @property (strong, nonatomic) UIButton *sendButton;
-@property(nonatomic)CGRect keyBoardFrame;
+@property (nonatomic)CGRect keyBoardFrame;
 
 @property(strong,nonatomic)NSMutableArray *messages;
 
@@ -23,6 +26,7 @@
     [super viewDidLoad];
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
+
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
             self.messages=self.chatRoom.messages;
@@ -41,6 +45,13 @@
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.3];
+    [self.navigationController setNavigationBarHidden:NO];
+    [UIView commitAnimations];
 }
 
 -(void)keyboardWillShow:(NSNotification *)notification{
@@ -78,11 +89,11 @@
     self.view.frame = superViewRect;
     [UIView commitAnimations];
 }
-
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
-    [textField resignFirstResponder];
-    return YES;
-}
+//
+//-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+//    [textField resignFirstResponder];
+//    return YES;
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -96,8 +107,11 @@
 }
 
 -(void)setupNavigationBar{
-    [self.navigationController setNavigationBarHidden:NO];
-    [self.navigationController.navigationBar.topItem setTitle:self.chatRoom.firebaseRoomURL];
+    self.navigationController.navigationBar.backItem.title=@"";
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1]];
+    self.navigationController.navigationBar.topItem.title=self.chatRoom.firebaseRoomURL;
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 - (void)setupTableView
@@ -106,7 +120,8 @@
     [self.view addSubview:self.tableView];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    self.tableView.separatorColor = [UIColor clearColor];
+       [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
@@ -137,22 +152,35 @@
 }
 
 - (void)sendButtonTapped{
-    NSString *message = self.inputTextField.text;
-    [self.chatRoom.firebase setValue:@{@"user":self.user.name,
-                                    @"message":message}];
-    self.inputTextField.text = @"";
-    [self.view endEditing:YES];
+    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    if (![self.inputTextField.text isEqualToString:@""] || ![self.inputTextField.text isEqualToString:@" "]) {
+        NSString *message = self.inputTextField.text;
+        self.sendButton.titleLabel.textColor=[UIColor blackColor];
+        [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+                                           @"message":message}];
+        self.inputTextField.text = @"";
+    }
+}
+
+-(void)sendButtonNormal{
+    [self.sendButton setBackgroundColor:[UIColor whiteColor]];
 }
 
 - (void)setupSendButton{
     self.sendButton = [[UIButton alloc] init];
     [self.view addSubview:self.sendButton];
-    self.sendButton.backgroundColor = [UIColor blueColor];
+    self.sendButton.layer.cornerRadius=10.0f;
+    self.sendButton.layer.masksToBounds=YES;
+    UIColor *borderColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.sendButton.layer.borderColor=[borderColor CGColor];
+    self.sendButton.layer.borderWidth=2.0f;
     [self.sendButton setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Send" attributes:nil] forState:UIControlStateNormal];
-    
-    [self.sendButton addTarget:self action:@selector(sendButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-    
+    self.sendButton.titleLabel.textColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    [self.sendButton addTarget:self action:@selector(sendButtonTapped) forControlEvents:UIControlEventTouchDown];
+    [self.sendButton addTarget:self action:@selector(sendButtonNormal) forControlEvents:UIControlEventTouchUpInside];
     self.sendButton.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    
     
     NSLayoutConstraint *sendButtonTop = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                      attribute:NSLayoutAttributeTop
@@ -168,7 +196,7 @@
                                                                            toItem:self.view
                                                                         attribute:NSLayoutAttributeBottom
                                                                        multiplier:1.0
-                                                                         constant:0.0];
+                                                                         constant:-4.0];
     
     NSLayoutConstraint *sendButtonLeft = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                       attribute:NSLayoutAttributeLeft
@@ -176,7 +204,7 @@
                                                                          toItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeRight
                                                                      multiplier:1.0
-                                                                       constant:0.0];
+                                                                       constant:10.0];
     
     NSLayoutConstraint *sendButtonRight = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                        attribute:NSLayoutAttributeRight
@@ -184,7 +212,7 @@
                                                                           toItem:self.tableView
                                                                        attribute:NSLayoutAttributeRight
                                                                       multiplier:1.0
-                                                                        constant:0.0];
+                                                                        constant:-10.0];
     
     [self.view addConstraints:@[sendButtonTop, sendButtonBottom, sendButtonLeft, sendButtonRight]];
 }
@@ -193,7 +221,15 @@
 {
     self.inputTextField = [[UITextField alloc] init];
     [self.view addSubview:self.inputTextField];
-    self.inputTextField.backgroundColor = [UIColor greenColor];
+    self.inputTextField.layer.cornerRadius=10.0f;
+    self.inputTextField.layer.masksToBounds=YES;
+    UIColor *borderColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.inputTextField.layer.borderColor=[borderColor CGColor];
+    self.inputTextField.layer.borderWidth=2.0f;
+    UIView *spacerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
+    [self.inputTextField setLeftViewMode:UITextFieldViewModeAlways];
+    [self.inputTextField setLeftView:spacerView];
+
     self.inputTextField.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *textFieldTop = [NSLayoutConstraint constraintWithItem:self.inputTextField
@@ -207,10 +243,10 @@
     NSLayoutConstraint *textFieldBottom = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                        attribute:NSLayoutAttributeBottom
                                                                        relatedBy:NSLayoutRelationEqual
-                                                                          toItem:self.tableView
+                                                                          toItem:self.view
                                                                        attribute:NSLayoutAttributeBottom
                                                                       multiplier:1.0
-                                                                        constant:40.0];
+                                                                        constant:-4.0];
     
     NSLayoutConstraint *textFieldLeft = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                      attribute:NSLayoutAttributeLeft
@@ -218,7 +254,7 @@
                                                                         toItem:self.tableView
                                                                      attribute:NSLayoutAttributeLeft
                                                                     multiplier:1.0
-                                                                      constant:0.0];
+                                                                      constant:10.0];
     
     NSLayoutConstraint *textFieldRight = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeRight
@@ -226,9 +262,11 @@
                                                                          toItem:self.tableView
                                                                       attribute:NSLayoutAttributeRight
                                                                      multiplier:1.0
-                                                                       constant:-80.0];
+                                                                       constant:-100.0];
     
     [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
+    
+    
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -236,15 +274,25 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+    KJDChatRoomTableViewCell *cell = [[KJDChatRoomTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+        
+    cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+//    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    cell.textLabel.numberOfLines = 0;
     if (![self.messages count]==0) {
         NSMutableDictionary *message=self.messages[indexPath.row];
         if ([message[@"user"] isEqualToString:self.user.name]) {
+            CGRect cellFrame=cell.textLabel.frame;
+            cellFrame.size.width=self.tableView.frame.size.width*0.5;
+            cell.textLabel.frame=cellFrame;
             cell.textLabel.textAlignment=NSTextAlignmentRight;
             cell.textLabel.text=message[@"message"];
             cell.detailTextLabel.text=message[@"user"];
             return cell;
         }else{
+            CGRect cellFrame=cell.textLabel.frame;
+            cellFrame.size.width=self.tableView.frame.size.width*0.5;
+            cell.textLabel.frame=cellFrame;
             cell.textLabel.textAlignment=NSTextAlignmentLeft;
             cell.textLabel.text=message[@"message"];
             cell.detailTextLabel.text=message[@"user"];

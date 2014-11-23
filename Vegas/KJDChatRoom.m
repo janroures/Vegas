@@ -9,16 +9,6 @@
 
 @implementation KJDChatRoom
 
-//+ (instancetype)sharedChatRoom {
-//    static KJDChatRoom *_sharedChatRoom = nil;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        _sharedChatRoom = [[KJDChatRoom alloc] init];
-//    });
-//    
-//    return _sharedChatRoom;
-//}
-
 -(instancetype)initWithUser:(KJDUser *)user{
     self=[super init];
     if (self) {

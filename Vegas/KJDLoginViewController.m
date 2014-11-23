@@ -24,6 +24,9 @@
     [super viewDidLoad];
     [self setupViewsAndConstraints];
     self.user =[[KJDUser alloc]initWithRandomName];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
     self.navigationController.navigationBarHidden = YES;
 }
 
