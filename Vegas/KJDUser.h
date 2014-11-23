@@ -1,15 +1,17 @@
 //
 //  KJDUser.h
-//  ChatCodev2
-//
-//  Created by DANNY WU on 11/12/14.
-//  Copyright (c) 2014 DANNY WU. All rights reserved.
-//
+//  Vegas
 
 #import <Foundation/Foundation.h>
 
 @interface KJDUser : NSObject
 
+extern NSString *const lettersAndNumbersString;
+
 @property (strong, nonatomic) NSString *name;
+
+-(instancetype)init;
+-(instancetype)initWithRandomName;
+-(NSString *)createRandomUsername;
 
 @end

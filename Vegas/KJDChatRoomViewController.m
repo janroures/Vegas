@@ -1,19 +1,17 @@
 //
 //  ViewController.m
-//  ChatCodev2
-//
-//  Created by DANNY WU on 11/12/14.
-//  Copyright (c) 2014 DANNY WU. All rights reserved.
-//
+//  Vegas
 
 #import "KJDChatRoomViewController.h"
 #import <Firebase/Firebase.h>
+#import "KJDChatRoom.h"
 
 @interface KJDChatRoomViewController ()
 
 @property (strong, nonatomic) UITextField *inputTextField;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong,nonatomic) UILabel *label;
+@property (strong,nonatomic) KJDChatRoom *chatRoom;
 
 @property (strong, nonatomic) UIButton *sendButton;
 @property(strong,nonatomic)Firebase *firebase;
@@ -28,9 +26,17 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.inputTextField.delegate=self;
-    self.messages=[[NSMutableArray alloc]init];
-    [self setupFirebase];
     [self setupViewsAndConstraints];
+    self.chatRoom=[KJDChatRoom sharedChatRoom];
+    [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
+        if (completed) {
+            self.messages=self.chatRoom.messages;
+            self.user=self.chatRoom.user;
+            [[NSOperationQueue mainQueue]addOperationWithBlock:^{
+                [self.tableView reloadData];
+            }];
+        }
+    }];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -40,27 +46,6 @@
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-}
-
-- (void)setupFirebase{
-    self.firebaseURL = [NSString stringWithFormat:@"https://boiling-torch-9946.firebaseio.com/%@", self.firebaseRoomURL];
-    self.firebase = [[Firebase alloc] initWithUrl:self.firebaseURL];
-    
-    [self.firebase observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-        [self fetchMessagesFromCloud:snapshot withBlock:^{
-            [self.tableView reloadData];
-        }];
-    }];
-}
-
--(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)())completionBlock{
-    if ([snapshot.value isKindOfClass:[NSDictionary class]]) {
-        [self.messages addObject:snapshot.value[@"message"]];
-    }else if ([snapshot.value isKindOfClass:[NSString class]]){
-        NSLog(@"%@", snapshot.value);
-        [self.messages addObject:snapshot.value];
-    }
-    completionBlock();
 }
 
 -(void)keyboardWillShow:(NSNotification *)notification{
@@ -86,18 +71,14 @@
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3];
     CGRect superViewRect = self.view.frame;
-    
-    UIEdgeInsets inset = UIEdgeInsetsMake(self.keyBoardFrame.size.height, 0, 0, 0);
+    UIEdgeInsets inset = UIEdgeInsetsMake(self.keyBoardFrame.size.height+self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
     UIEdgeInsets afterInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
-    
     if (moveUp){
         self.tableView.contentInset = inset;
         superViewRect.origin.y -= self.keyBoardFrame.size.height;
-//        rect.size.height += self.keyBoardFrame.size.height;
     }else{
         self.tableView.contentInset = afterInset;
         superViewRect.origin.y += self.keyBoardFrame.size.height;
-//        rect.size.height -= self.keyBoardFrame.size.height;
     }
     self.view.frame = superViewRect;
     [UIView commitAnimations];
@@ -110,7 +91,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)setupViewsAndConstraints {
@@ -140,7 +120,7 @@
                                                                        toItem:self.view
                                                                     attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:self.navigationController.navigationBar.frame.size.height+20.0];
+                                                                     constant:0.0];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                        attribute:NSLayoutAttributeBottom
@@ -162,9 +142,9 @@
 }
 
 - (void)sendButtonTapped{
-    NSLog(@"Button Tapped");
     NSString *message = self.inputTextField.text;
-    [self.firebase setValue:message];
+    [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+                              @"message":message}];
     self.inputTextField.text = @"";
     [self.view endEditing:YES];
 }
@@ -257,25 +237,25 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    //test data
-    
-    return 15;
-    
-//    return [self.messages count];
+    return [self.messages count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-    
-    //test data
-    
-    cell.textLabel.text=[NSString stringWithFormat:@"asdasdasd %ld", (long)indexPath.row];
-    
-//    if (![self.messages count]==0) {
-//        NSString *message=self.messages[indexPath.row];
-//        cell.textLabel.text=message;
-//    }
-    
+    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
+    if (![self.messages count]==0) {
+        NSMutableDictionary *message=self.messages[indexPath.row];
+        if ([message[@"user"] isEqualToString:self.user.name]) {
+            cell.textLabel.textAlignment=NSTextAlignmentRight;
+            cell.textLabel.text=message[@"message"];
+            cell.detailTextLabel.text=message[@"user"];
+            return cell;
+        }else{
+            cell.textLabel.textAlignment=NSTextAlignmentLeft;
+            cell.textLabel.text=message[@"message"];
+            cell.detailTextLabel.text=message[@"user"];
+            return cell;
+        }
+    }
     return cell;
 }
 

@@ -1,10 +1,7 @@
 //
 //  main.m
-//  ChatCode
-//
-//  Created by Karim Mourra on 10/31/14.
-//  Copyright (c) 2014 Karim. All rights reserved.
-//
+//  Vegas
+
 
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"

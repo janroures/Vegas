@@ -1,22 +1,20 @@
 //
 //  KJDLoginViewController.h
 //  Vegas
-//
-//  Created by DANNY WU on 11/21/14.
-//  Copyright (c) 2014 Jan Roures Mintenig. All rights reserved.
-//
 
 #import "KJDLoginViewController.h"
 #import "KJDChatRoomViewController.h"
 #import <RNBlurModalView.h>
-
+#import "KJDUser.h"
+#import "KJDChatRoom.h"
 
 @interface KJDLoginViewController ()
 
 @property (strong, nonatomic) UILabel *enterLabel;
 @property (strong, nonatomic) UITextField *chatCodeField;
 @property (strong, nonatomic) UIButton *enterButton;
-@property (strong, nonatomic) KJDChatRoomViewController *chatroom;
+@property (strong,nonatomic) KJDUser *user;
+@property (strong,nonatomic) KJDChatRoom *chatRoom;
 
 @end
 
@@ -25,6 +23,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupViewsAndConstraints];
+    self.user =[[KJDUser alloc]initWithRandomName];
     self.navigationController.navigationBarHidden = YES;
 }
 
@@ -37,7 +36,6 @@
 - (void)setupLabel{
     self.enterLabel = [[UILabel alloc] init];
     self.enterLabel.text = @"Enter Chat ID:";
-    //    self.enterLabel.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.enterLabel];
     self.enterLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.enterLabel setTextAlignment:NSTextAlignmentCenter];
@@ -170,8 +168,10 @@
         [modal show];
         self.chatCodeField.text=@"";
     }else{
+        self.chatRoom=[KJDChatRoom sharedChatRoom];
+        self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
+        self.chatRoom.user=self.user;
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
-        destinationViewController.firebaseRoomURL = self.chatCodeField.text;
         [self.navigationController pushViewController:destinationViewController animated:YES];
     }
 }

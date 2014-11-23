@@ -69,13 +69,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0B42BD6E1A1FE77700FCEFE7 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Model;
-			sourceTree = "<group>";
-		};
 		0BB036A61A1FE0EE0021CCF4 = {
 			isa = PBXGroup;
 			children = (
@@ -99,11 +92,8 @@
 		0BB036B11A1FE0EE0021CCF4 /* Vegas */ = {
 			isa = PBXGroup;
 			children = (
-				0B42BD6E1A1FE77700FCEFE7 /* Model */,
 				B19C3A301A1FE6F9002868B1 /* View Controller */,
 				B19C3A2E1A1FE6C9002868B1 /* Model */,
-				0BFE380E1A1FE1EB00EA4D28 /* AppDelegate.h */,
-				0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */,
 				0BB036B21A1FE0EE0021CCF4 /* Supporting Files */,
 				0BFE37FC1A1FE1C200EA4D28 /* Base.lproj */,
 			);
@@ -113,6 +103,8 @@
 		0BB036B21A1FE0EE0021CCF4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0BFE380E1A1FE1EB00EA4D28 /* AppDelegate.h */,
+				0BFE380F1A1FE1EB00EA4D28 /* AppDelegate.m */,
 				0BB036B31A1FE0EE0021CCF4 /* Info.plist */,
 				B19C3A331A1FE748002868B1 /* main.m */,
 			);
