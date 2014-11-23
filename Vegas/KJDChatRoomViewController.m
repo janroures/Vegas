@@ -23,7 +23,6 @@
     [super viewDidLoad];
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
-//    self.chatRoom=[KJDChatRoom sharedChatRoom];
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
             self.messages=self.chatRoom.messages;
