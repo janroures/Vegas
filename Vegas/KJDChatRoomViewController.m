@@ -5,6 +5,7 @@
 #import "KJDChatRoomViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "KJDChatRoomTableViewCell.h"
+#import <BMYScrollableNavigationBarViewController.h>
 
 @interface KJDChatRoomViewController ()
 
@@ -26,7 +27,7 @@
     [super viewDidLoad];
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
-
+    
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
             self.messages=self.chatRoom.messages;
@@ -121,7 +122,7 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
-       [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
@@ -229,7 +230,7 @@
     UIView *spacerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
     [self.inputTextField setLeftViewMode:UITextFieldViewModeAlways];
     [self.inputTextField setLeftView:spacerView];
-
+    
     self.inputTextField.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *textFieldTop = [NSLayoutConstraint constraintWithItem:self.inputTextField
@@ -274,26 +275,40 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    KJDChatRoomTableViewCell *cell = [[KJDChatRoomTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
-        
-    cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-//    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    cell.textLabel.numberOfLines = 0;
+    static NSString *reuseIdentifier=@"Cell";
+    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
+    
+    cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
+    
+    
+//    KJDChatRoomTableViewCell *cell = (KJDChatRoomTableViewCell *)[tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+//    if (cell==nil) {
+//        cell = [[KJDChatRoomTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
+//    }
+//    cell.messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
+//    cell.messageLabel.numberOfLines = 0;
     if (![self.messages count]==0) {
         NSMutableDictionary *message=self.messages[indexPath.row];
         if ([message[@"user"] isEqualToString:self.user.name]) {
-            CGRect cellFrame=cell.textLabel.frame;
-            cellFrame.size.width=self.tableView.frame.size.width*0.5;
-            cell.textLabel.frame=cellFrame;
+//            cell.messageLabel.textAlignment=NSTextAlignmentRight;
+//            cell.nameLabel.textAlignment=NSTextAlignmentRight;
+//            
+//            cell.messageLabel.text=message[@"message"];
+//            cell.nameLabel.text=message[@"user"];
             cell.textLabel.textAlignment=NSTextAlignmentRight;
+            cell.detailTextLabel.textAlignment=NSTextAlignmentRight;
             cell.textLabel.text=message[@"message"];
             cell.detailTextLabel.text=message[@"user"];
+            
             return cell;
         }else{
-            CGRect cellFrame=cell.textLabel.frame;
-            cellFrame.size.width=self.tableView.frame.size.width*0.5;
-            cell.textLabel.frame=cellFrame;
+//            cell.messageLabel.textAlignment=NSTextAlignmentLeft;
+//            cell.nameLabel.textAlignment=NSTextAlignmentLeft;
+//            
+//            cell.messageLabel.text=message[@"message"];
+//            cell.nameLabel.text=message[@"user"];
             cell.textLabel.textAlignment=NSTextAlignmentLeft;
+            cell.detailTextLabel.textAlignment=NSTextAlignmentLeft;
             cell.textLabel.text=message[@"message"];
             cell.detailTextLabel.text=message[@"user"];
             return cell;
