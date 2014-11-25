@@ -4,17 +4,13 @@
 
 #import "KJDChatRoomViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "KJDChatRoomTableViewCell.h"
-#import <BMYScrollableNavigationBarViewController.h>
 
 @interface KJDChatRoomViewController ()
 
 @property (strong, nonatomic) UITextField *inputTextField;
 @property (strong, nonatomic) UITableView *tableView;
-@property (strong,nonatomic) UILabel *label;
-@property (strong,nonatomic) KJDChatRoomTableViewCell *cell;
-
 @property (strong, nonatomic) UIButton *sendButton;
+
 @property (nonatomic)CGRect keyBoardFrame;
 
 @property(strong,nonatomic)NSMutableArray *messages;
@@ -27,6 +23,11 @@
     [super viewDidLoad];
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
+    UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
+    CGRect frame=CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+    backgroundImage.frame=frame;
+    [self.view addSubview:backgroundImage];
+    [self.view sendSubviewToBack:backgroundImage];
     
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
@@ -90,7 +91,7 @@
     self.view.frame = superViewRect;
     [UIView commitAnimations];
 }
-//
+
 //-(BOOL)textFieldShouldReturn:(UITextField *)textField{
 //    [textField resignFirstResponder];
 //    return YES;
@@ -108,10 +109,12 @@
 }
 
 -(void)setupNavigationBar{
-    self.navigationController.navigationBar.backItem.title=@"";
-    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1]];
-    self.navigationController.navigationBar.topItem.title=self.chatRoom.firebaseRoomURL;
+    self.navigationItem.title=self.chatRoom.firebaseRoomURL;
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
+                                                  forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.view.backgroundColor = [UIColor clearColor];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
@@ -122,7 +125,11 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
+    self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
+    [self.view sendSubviewToBack:self.tableView.backgroundView];
+    self.tableView.clipsToBounds=YES;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    self.tableView.userInteractionEnabled=NO;
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
@@ -131,7 +138,7 @@
                                                                        toItem:self.view
                                                                     attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:0.0];
+                                                                     constant:self.navigationController.navigationBar.frame.size.height];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                        attribute:NSLayoutAttributeBottom
@@ -153,30 +160,29 @@
 }
 
 - (void)sendButtonTapped{
-    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    if (![self.inputTextField.text isEqualToString:@""] || ![self.inputTextField.text isEqualToString:@" "]) {
+    self.sendButton.backgroundColor=[UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
+}
+
+-(void)sendButtonNormal{
+    if (![self.inputTextField.text isEqualToString:@""] && ![self.inputTextField.text isEqualToString:@" "]) {
         NSString *message = self.inputTextField.text;
-        self.sendButton.titleLabel.textColor=[UIColor blackColor];
+        self.sendButton.titleLabel.textColor=[UIColor grayColor];
         [self.chatRoom.firebase setValue:@{@"user":self.user.name,
                                            @"message":message}];
         self.inputTextField.text = @"";
     }
-}
-
--(void)sendButtonNormal{
-    [self.sendButton setBackgroundColor:[UIColor whiteColor]];
+    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.sendButton.titleLabel.textColor=[UIColor whiteColor];
 }
 
 - (void)setupSendButton{
     self.sendButton = [[UIButton alloc] init];
     [self.view addSubview:self.sendButton];
+    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
     self.sendButton.layer.cornerRadius=10.0f;
     self.sendButton.layer.masksToBounds=YES;
-    UIColor *borderColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    self.sendButton.layer.borderColor=[borderColor CGColor];
-    self.sendButton.layer.borderWidth=2.0f;
     [self.sendButton setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Send" attributes:nil] forState:UIControlStateNormal];
-    self.sendButton.titleLabel.textColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.sendButton.titleLabel.textColor=[UIColor whiteColor];
     [self.sendButton addTarget:self action:@selector(sendButtonTapped) forControlEvents:UIControlEventTouchDown];
     [self.sendButton addTarget:self action:@selector(sendButtonNormal) forControlEvents:UIControlEventTouchUpInside];
     self.sendButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -226,7 +232,8 @@
     self.inputTextField.layer.masksToBounds=YES;
     UIColor *borderColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
     self.inputTextField.layer.borderColor=[borderColor CGColor];
-    self.inputTextField.layer.borderWidth=2.0f;
+    self.inputTextField.layer.borderWidth=1.5f;
+    self.inputTextField.backgroundColor=[UIColor clearColor];
     UIView *spacerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
     [self.inputTextField setLeftViewMode:UITextFieldViewModeAlways];
     [self.inputTextField setLeftView:spacerView];
@@ -274,43 +281,34 @@
     return [self.messages count];
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 57;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *reuseIdentifier=@"Cell";
-    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
-    
-    cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
-    
-    
-//    KJDChatRoomTableViewCell *cell = (KJDChatRoomTableViewCell *)[tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
-//    if (cell==nil) {
-//        cell = [[KJDChatRoomTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
-//    }
-//    cell.messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
-//    cell.messageLabel.numberOfLines = 0;
+    UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
+    cell.textLabel.numberOfLines=0;
     if (![self.messages count]==0) {
         NSMutableDictionary *message=self.messages[indexPath.row];
+        NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
         if ([message[@"user"] isEqualToString:self.user.name]) {
-//            cell.messageLabel.textAlignment=NSTextAlignmentRight;
-//            cell.nameLabel.textAlignment=NSTextAlignmentRight;
-//            
-//            cell.messageLabel.text=message[@"message"];
-//            cell.nameLabel.text=message[@"user"];
+            NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+            [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
+            NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
+            [muAtrStr appendAttributedString:atrStr];
+            cell.textLabel.attributedText=muAtrStr;
+            cell.backgroundColor=[UIColor clearColor];
             cell.textLabel.textAlignment=NSTextAlignmentRight;
-            cell.detailTextLabel.textAlignment=NSTextAlignmentRight;
-            cell.textLabel.text=message[@"message"];
-            cell.detailTextLabel.text=message[@"user"];
-            
+            cell.textLabel.textAlignment=NSTextAlignmentRight;
             return cell;
         }else{
-//            cell.messageLabel.textAlignment=NSTextAlignmentLeft;
-//            cell.nameLabel.textAlignment=NSTextAlignmentLeft;
-//            
-//            cell.messageLabel.text=message[@"message"];
-//            cell.nameLabel.text=message[@"user"];
-            cell.textLabel.textAlignment=NSTextAlignmentLeft;
-            cell.detailTextLabel.textAlignment=NSTextAlignmentLeft;
-            cell.textLabel.text=message[@"message"];
-            cell.detailTextLabel.text=message[@"user"];
+            NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+            [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
+            NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
+            cell.backgroundColor=[UIColor clearColor];
+            [muAtrStr appendAttributedString:atrStr];
+            cell.textLabel.attributedText=muAtrStr;
             return cell;
         }
     }

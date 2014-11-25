@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		0B42BD6F1A1FE80200FCEFE7 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */; };
+		0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */; };
+		0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */; };
+		0BAA8C641A24403800B7E5AF /* chatIDTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAA8C631A24403800B7E5AF /* chatIDTextField.m */; };
+		0BAA8C661A2441FB00B7E5AF /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BAA8C651A2441FB00B7E5AF /* background.png */; };
 		0BB036CF1A1FE0EE0021CCF4 /* VegasTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB036CE1A1FE0EE0021CCF4 /* VegasTests.m */; };
 		0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */; };
 		0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */; };
@@ -32,6 +36,11 @@
 /* Begin PBXFileReference section */
 		0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomTableViewCell.h; sourceTree = "<group>"; };
 		0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomTableViewCell.m; sourceTree = "<group>"; };
+		0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomTableViewCell.xib; sourceTree = "<group>"; };
+		0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magnifyingglass.png; sourceTree = "<group>"; };
+		0BAA8C621A24403800B7E5AF /* chatIDTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chatIDTextField.h; sourceTree = "<group>"; };
+		0BAA8C631A24403800B7E5AF /* chatIDTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = chatIDTextField.m; sourceTree = "<group>"; };
+		0BAA8C651A2441FB00B7E5AF /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
 		0BB036AF1A1FE0EE0021CCF4 /* Vegas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vegas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BB036B31A1FE0EE0021CCF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BB036C81A1FE0EE0021CCF4 /* VegasTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VegasTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -72,6 +81,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0BA1E8001A23F9850091DC3C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */,
+				0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCell.h */,
+				0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		0BAA8C611A243F1800B7E5AF /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */,
+				0BAA8C651A2441FB00B7E5AF /* background.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		0BB036A61A1FE0EE0021CCF4 = {
 			isa = PBXGroup;
 			children = (
@@ -95,8 +123,8 @@
 		0BB036B11A1FE0EE0021CCF4 /* Vegas */ = {
 			isa = PBXGroup;
 			children = (
-				0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCell.h */,
-				0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */,
+				0BAA8C611A243F1800B7E5AF /* Images */,
+				0BA1E8001A23F9850091DC3C /* Views */,
 				B19C3A301A1FE6F9002868B1 /* View Controller */,
 				B19C3A2E1A1FE6C9002868B1 /* Model */,
 				0BB036B21A1FE0EE0021CCF4 /* Supporting Files */,
@@ -156,6 +184,8 @@
 				0BFE38041A1FE1C200EA4D28 /* KJDUser.m */,
 				0BFE37FF1A1FE1C200EA4D28 /* KJDChatRoom.h */,
 				0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */,
+				0BAA8C621A24403800B7E5AF /* chatIDTextField.h */,
+				0BAA8C631A24403800B7E5AF /* chatIDTextField.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -261,6 +291,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib in Resources */,
+				0BAA8C661A2441FB00B7E5AF /* background.png in Resources */,
+				0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,6 +344,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BAA8C641A24403800B7E5AF /* chatIDTextField.m in Sources */,
 				0B42BD6F1A1FE80200FCEFE7 /* (null) in Sources */,
 				0BFE380B1A1FE1C200EA4D28 /* KJDUser.m in Sources */,
 				0BFE38101A1FE1EB00EA4D28 /* AppDelegate.m in Sources */,

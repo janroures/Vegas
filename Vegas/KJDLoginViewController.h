@@ -4,6 +4,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface KJDLoginViewController : UIViewController
+@interface KJDLoginViewController : UIViewController<UITextFieldDelegate>
 
 @end

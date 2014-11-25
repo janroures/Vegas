@@ -10,8 +10,7 @@
 
 @interface KJDChatRoomTableViewCell : UITableViewCell
 
-@property(strong,nonatomic)UILabel *nameLabel;
-@property(strong,nonatomic)UILabel *messageLabel;
-//@property(strong,nonatomic)uitex
+@property (weak, nonatomic) IBOutlet UILabel *usernameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *userMessageLabel;
 
 @end
