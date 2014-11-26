@@ -3,17 +3,19 @@
 //  Vegas
 
 #import "KJDChatRoomViewController.h"
-#import <QuartzCore/QuartzCore.h>
 
 @interface KJDChatRoomViewController ()
 
 @property (strong, nonatomic) UITextField *inputTextField;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIButton *sendButton;
+@property (strong, nonatomic) UIButton *mediaButton;
 
 @property (nonatomic)CGRect keyBoardFrame;
 
 @property(strong,nonatomic)NSMutableArray *messages;
+
+@property(strong, nonatomic) NSMutableDictionary* contentToSend;
 
 @end
 
@@ -47,6 +49,8 @@
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
+    
+    self.contentToSend = [[NSMutableDictionary alloc] init];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -106,6 +110,7 @@
     [self setupTableView];
     [self setupTextField];
     [self setupSendButton];
+    [self setupMediaButton];
 }
 
 -(void)setupNavigationBar{
@@ -226,8 +231,52 @@
     [self.view addConstraints:@[sendButtonTop, sendButtonBottom, sendButtonLeft, sendButtonRight]];
 }
 
-- (void)setupTextField
-{
+-(void)setupMediaButton{
+    self.mediaButton = [[UIButton alloc] init];
+    [self.view addSubview:self.mediaButton];
+    self.mediaButton.backgroundColor = [UIColor redColor];
+    [self.mediaButton setAttributedTitle :[[NSAttributedString alloc] initWithString:@"pic"
+                                                                          attributes:nil]
+                                                                            forState:UIControlStateNormal];
+    [self.mediaButton addTarget:self action:@selector(mediaButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    self.mediaButton.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    NSLayoutConstraint *mediaButtonTop = [NSLayoutConstraint constraintWithItem:self.mediaButton
+                                                                      attribute:NSLayoutAttributeTop
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.inputTextField
+                                                                      attribute:NSLayoutAttributeTop
+                                                                     multiplier:1
+                                                                       constant:0];
+    
+    NSLayoutConstraint *mediaButtonBottom =[NSLayoutConstraint constraintWithItem:self.mediaButton
+                                                                        attribute:NSLayoutAttributeBottom
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.inputTextField
+                                                                        attribute:NSLayoutAttributeBottom
+                                                                       multiplier:1
+                                                                         constant:0];
+    
+    NSLayoutConstraint *mediaButtonLeft =[NSLayoutConstraint constraintWithItem:self.mediaButton
+                                                                      attribute:NSLayoutAttributeLeft
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.view
+                                                                      attribute:NSLayoutAttributeLeft
+                                                                     multiplier:1
+                                                                       constant:0];
+    
+    NSLayoutConstraint *mediaButtonRight =[NSLayoutConstraint constraintWithItem:self.mediaButton
+                                                                       attribute:NSLayoutAttributeRight
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:self.inputTextField
+                                                                       attribute:NSLayoutAttributeLeft
+                                                                      multiplier:1
+                                                                        constant:0];
+    
+    [self.view addConstraints:@[mediaButtonTop, mediaButtonBottom, mediaButtonLeft, mediaButtonRight]];
+}
+
+- (void)setupTextField{
     self.inputTextField = [[UITextField alloc] init];
     [self.view addSubview:self.inputTextField];
     self.inputTextField.layer.cornerRadius=10.0f;
@@ -275,8 +324,167 @@
                                                                        constant:-100.0];
     
     [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
+}
+
+-(void)summonMap
+{
+    KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
+    
+    [self presentViewController:mapKitView animated:YES completion:^{
+        
+    }];
+}
+
+-(NSString *)imageToNSString:(UIImage *)image{
+    NSData *imageData = UIImagePNGRepresentation(image);
+    return [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+}
+
+-(NSString*)videoToNSString:(NSURL*)video{
+    NSData* videoData =[NSData dataWithContentsOfURL:video];
+    return [videoData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+}
+
+-(UIImage *)stringToUIImage:(NSString *)string{
+    NSData *data = [[NSData alloc]initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    return [UIImage imageWithData:data];
+}
+
+-(void)stringToVideo:(NSString*)string{
+//may not work
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:string];
+    
+    NSURL *fileURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
+    
+    //theoretically would play video.
+    MPMoviePlayerController* videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL: fileURL];
     
     
+    //alternative - more to reproduce a video ; would need to know where a video is stored when saved.
+    
+    /*
+     NSString *moviePath = [[info objectForKey:
+     UIImagePickerControllerMediaURL] path];
+     if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum (moviePath))
+     {
+     UISaveVideoAtPathToSavedPhotosAlbum (moviePath,self, @selector(video:didFinishSavingWithError:contextInfo:), nil);
+     }
+     
+     //for obtaining filePath, consider also:
+     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"vid" ofType:@"mp4"];
+     
+     */
+}
+
+-(BOOL)systemVersionLessThan8
+{
+    CGFloat deviceVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+    
+    return deviceVersion < 8.0f;
+}
+
+
+-(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    NSLog(@"dictionnary = %@", info);
+    NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
+    NSLog(@"mediaType = %@", mediaType);
+    
+    if([mediaType isEqualToString:@"public.image"])
+    {
+        UIImage* extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
+        NSString* photoInString = [self imageToNSString:extractedPhoto];
+        [self.contentToSend setObject:photoInString forKey:@"image"];
+    }
+    else if([mediaType isEqualToString:@"public.movie"])
+    {
+        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerReferenceURL"] class]);
+        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerMediaURL"] class]);
+        
+        
+        
+        NSString* videoInString = [self videoToNSString:info[@"UIImagePickerControllerMediaURL"]];
+        [self.contentToSend setObject:videoInString forKey:@"video"];
+    }
+    
+    [picker dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+}
+
+-(void) mediaButtonTapped
+{
+    if ([self systemVersionLessThan8])
+    {
+        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
+        
+        [mediaAlert show];
+    }
+    else
+    {
+        UIAlertController* mediaAlert = [UIAlertController alertControllerWithTitle:@"Share something!" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+        
+        UIAlertAction* takePhoto = [UIAlertAction actionWithTitle:@"Take a Picture or Video"
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action){[self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
+                                                          }];
+        [mediaAlert addAction:takePhoto];
+        
+        UIAlertAction* chooseExistingPhoto = [UIAlertAction actionWithTitle:@"Choose an existing Photo or Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
+        }];
+        
+        [mediaAlert addAction:chooseExistingPhoto];
+        
+        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        }];
+        
+        [mediaAlert addAction:cancel];
+        
+        UIAlertAction* showLocation = [UIAlertAction actionWithTitle:@"Share Location" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [self summonMap];
+        }];
+        
+        [mediaAlert addAction:showLocation];
+        
+        [self presentViewController:mediaAlert animated:YES completion:^{
+            
+        }];
+    }
+    
+    
+}
+
+-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(buttonIndex == 1){
+        [self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
+    }else if (buttonIndex == 2){
+        [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
+    }else if (buttonIndex == 3){
+        [self summonMap];
+    }
+}
+
+-(void) obtainImageFrom:(UIImagePickerControllerSourceType)sourceType{
+    UIImagePickerController* imagePicker = [[UIImagePickerController alloc] init];
+    imagePicker.sourceType = sourceType;
+    NSArray *mediaTypesAllowed = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+    imagePicker.mediaTypes = mediaTypesAllowed;
+    
+    //seems to be unnecessary
+    //    if (sourceType == UIImagePickerControllerSourceTypeCamera)
+    //    {
+    //        imagePicker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString*)kUTTypeMovie, kUTTypeImage, nil];
+    //    }
+    
+    imagePicker.delegate = self;
+    [self presentViewController:imagePicker
+                       animated:YES
+                     completion:^{
+                         
+                     }];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
