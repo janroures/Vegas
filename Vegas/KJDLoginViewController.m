@@ -23,7 +23,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.chatCodeField.delegate=self;
     UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
     backgroundImage.frame=self.view.frame;
     [self.view addSubview:backgroundImage];
@@ -36,9 +35,20 @@
 //-(void)viewWillAppear:(BOOL)animated{
 //    self.navigationController.navigationBarHidden = YES;
 //}
-
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
+-(BOOL) textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
+    if ([self.chatCodeField.text length]<4) {
+        RNBlurModalView *modal = [[RNBlurModalView alloc] initWithViewController:self title:@"Invalid Chat ID!" message:@"The code must be at least 4 characters long"];
+        [modal show];
+        self.chatCodeField.text=@"";
+    }else{
+        self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
+        self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
+        self.chatRoom.user=self.user;
+        KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
+        destinationViewController.chatRoom=self.chatRoom;
+        [self.navigationController pushViewController:destinationViewController animated:YES];
+    }
     return YES;
 }
 
@@ -94,6 +104,7 @@
 {
     self.chatCodeField = [[chatIDTextField alloc] init];
     [self.view addSubview:self.chatCodeField];
+    self.chatCodeField.delegate=self;
     self.chatCodeField.translatesAutoresizingMaskIntoConstraints = NO;
     self.chatCodeField.layer.cornerRadius=10.0f;
     self.chatCodeField.layer.masksToBounds=YES;

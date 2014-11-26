@@ -128,8 +128,10 @@
     self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
     self.tableView.clipsToBounds=YES;
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
-    self.tableView.userInteractionEnabled=NO;
+    [self.tableView registerClass:[KJDChatRoomTableViewCell class] forCellReuseIdentifier:@"Cell"];
+    self.cell = [[KJDChatRoomTableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
+    [self.tableView addSubview:self.cell];
+    self.tableView.scrollEnabled=YES;
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
@@ -138,7 +140,7 @@
                                                                        toItem:self.view
                                                                     attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:self.navigationController.navigationBar.frame.size.height];
+                                                                     constant:0.0];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                        attribute:NSLayoutAttributeBottom
@@ -287,8 +289,14 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+//    self.cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+//    self.cell.userMessageLabel.lineBreakMode=NSLineBreakByWordWrapping;
+//    self.cell.userMessageLabel.numberOfLines=0;
+//    self.cell.userInteractionEnabled=NO;
+//    self.cell.backgroundColor=[UIColor clearColor];
     cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
     cell.textLabel.numberOfLines=0;
+    cell.userInteractionEnabled=NO;
     if (![self.messages count]==0) {
         NSMutableDictionary *message=self.messages[indexPath.row];
         NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
@@ -301,6 +309,12 @@
             cell.backgroundColor=[UIColor clearColor];
             cell.textLabel.textAlignment=NSTextAlignmentRight;
             cell.textLabel.textAlignment=NSTextAlignmentRight;
+            
+//            self.cell.usernameLabel.text=self.user.name;
+//            self.cell.userMessageLabel.text=message[@"message"];
+//            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
+//            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
+            
             return cell;
         }else{
             NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
@@ -309,6 +323,9 @@
             cell.backgroundColor=[UIColor clearColor];
             [muAtrStr appendAttributedString:atrStr];
             cell.textLabel.attributedText=muAtrStr;
+            
+//            self.cell.usernameLabel.text=self.user.name;
+//            self.cell.userMessageLabel.text=message[@"message"];
             return cell;
         }
     }

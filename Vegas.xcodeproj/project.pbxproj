@@ -47,7 +47,7 @@
 		0BB036CD1A1FE0EE0021CCF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BB036CE1A1FE0EE0021CCF4 /* VegasTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VegasTests.m; sourceTree = "<group>"; };
 		0BFE37FF1A1FE1C200EA4D28 /* KJDChatRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoom.h; sourceTree = "<group>"; };
-		0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoom.m; sourceTree = "<group>"; };
+		0BFE38001A1FE1C200EA4D28 /* KJDChatRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoom.m; sourceTree = "<group>"; };
 		0BFE38011A1FE1C200EA4D28 /* KJDChatRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomViewController.h; sourceTree = "<group>"; };
 		0BFE38021A1FE1C200EA4D28 /* KJDChatRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomViewController.m; sourceTree = "<group>"; };
 		0BFE38031A1FE1C200EA4D28 /* KJDUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDUser.h; sourceTree = "<group>"; };

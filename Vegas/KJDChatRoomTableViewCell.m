@@ -16,7 +16,6 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         self.clipsToBounds = YES;
-        self.frame=[super frame];
     }
     return self;
 }
