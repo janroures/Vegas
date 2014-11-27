@@ -331,7 +331,7 @@
     KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
     
     [self presentViewController:mapKitView animated:YES completion:^{
-        
+        NSLog(@"hh");
     }];
 }
 
