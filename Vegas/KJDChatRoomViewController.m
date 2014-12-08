@@ -37,6 +37,7 @@
             self.user=self.chatRoom.user;
             [[NSOperationQueue mainQueue]addOperationWithBlock:^{
                 [self.tableView reloadData];
+//                [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.messages count]-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             }];
         }
     }];
@@ -234,11 +235,17 @@
 -(void)setupMediaButton{
     self.mediaButton = [[UIButton alloc] init];
     [self.view addSubview:self.mediaButton];
-    self.mediaButton.backgroundColor = [UIColor redColor];
-    [self.mediaButton setAttributedTitle :[[NSAttributedString alloc] initWithString:@"pic"
-                                                                          attributes:nil]
-                                                                            forState:UIControlStateNormal];
-    [self.mediaButton addTarget:self action:@selector(mediaButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self.mediaButton addTarget:self
+                         action:@selector(mediaButtonTapped)
+               forControlEvents:UIControlEventTouchUpInside];
+    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    [self.mediaButton setImage:[UIImage imageNamed:@"plus"] forState:UIControlStateNormal];
+    self.mediaButton.contentMode=UIViewContentModeCenter;
+    self.mediaButton.layer.cornerRadius=10.0f;
+    self.mediaButton.layer.masksToBounds=YES;
+    [self.mediaButton addTarget:self action:@selector(mediaButtonTapped) forControlEvents:UIControlEventTouchDown];
+    [self.mediaButton addTarget:self action:@selector(mediaButtonNormal) forControlEvents:UIControlEventTouchUpInside];
+    
     self.mediaButton.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *mediaButtonTop = [NSLayoutConstraint constraintWithItem:self.mediaButton
@@ -246,34 +253,65 @@
                                                                       relatedBy:NSLayoutRelationEqual
                                                                          toItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeTop
-                                                                     multiplier:1
-                                                                       constant:0];
+                                                                     multiplier:1.0
+                                                                       constant:0.0];
     
     NSLayoutConstraint *mediaButtonBottom =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                         attribute:NSLayoutAttributeBottom
                                                                         relatedBy:NSLayoutRelationEqual
                                                                            toItem:self.inputTextField
                                                                         attribute:NSLayoutAttributeBottom
-                                                                       multiplier:1
-                                                                         constant:0];
+                                                                       multiplier:1.0
+                                                                         constant:0.0];
     
     NSLayoutConstraint *mediaButtonLeft =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                       attribute:NSLayoutAttributeLeft
                                                                       relatedBy:NSLayoutRelationEqual
-                                                                         toItem:self.view
+                                                                         toItem:self.tableView
                                                                       attribute:NSLayoutAttributeLeft
-                                                                     multiplier:1
-                                                                       constant:0];
+                                                                     multiplier:1.0
+                                                                       constant:10.0];
     
     NSLayoutConstraint *mediaButtonRight =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                        attribute:NSLayoutAttributeRight
                                                                        relatedBy:NSLayoutRelationEqual
                                                                           toItem:self.inputTextField
                                                                        attribute:NSLayoutAttributeLeft
-                                                                      multiplier:1
-                                                                        constant:0];
-    
+                                                                      multiplier:1.0
+                                                                        constant:-10.0];
     [self.view addConstraints:@[mediaButtonTop, mediaButtonBottom, mediaButtonLeft, mediaButtonRight]];
+}
+
+-(void)mediaButtonNormal{
+    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+}
+
+-(void)mediaButtonTapped{
+    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
+    if ([self systemVersionLessThan8]){
+        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
+        [mediaAlert show];
+    }else{
+        UIAlertController* mediaAlert = [UIAlertController alertControllerWithTitle:@"Share something!" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertAction* takePhoto = [UIAlertAction actionWithTitle:@"Take a Picture or Video"
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action){[self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
+                                                          }];
+        [mediaAlert addAction:takePhoto];
+        UIAlertAction* chooseExistingPhoto = [UIAlertAction actionWithTitle:@"Choose an existing Photo or Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
+        }];
+        [mediaAlert addAction:chooseExistingPhoto];
+        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        }];
+        [mediaAlert addAction:cancel];
+        UIAlertAction* showLocation = [UIAlertAction actionWithTitle:@"Share Location" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [self summonMap];
+        }];
+        [mediaAlert addAction:showLocation];
+        [self presentViewController:mediaAlert animated:YES completion:^{
+        }];
+    }
 }
 
 - (void)setupTextField{
@@ -313,7 +351,7 @@
                                                                         toItem:self.tableView
                                                                      attribute:NSLayoutAttributeLeft
                                                                     multiplier:1.0
-                                                                      constant:10.0];
+                                                                      constant:45.0];
     
     NSLayoutConstraint *textFieldRight = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeRight
@@ -321,7 +359,7 @@
                                                                          toItem:self.tableView
                                                                       attribute:NSLayoutAttributeRight
                                                                      multiplier:1.0
-                                                                       constant:-100.0];
+                                                                       constant:-70.0];
     
     [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
 }
@@ -351,7 +389,7 @@
 }
 
 -(void)stringToVideo:(NSString*)string{
-//may not work
+    //may not work
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:string];
@@ -386,75 +424,23 @@
 }
 
 
--(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
+-(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
     NSLog(@"dictionnary = %@", info);
     NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
     NSLog(@"mediaType = %@", mediaType);
-    
-    if([mediaType isEqualToString:@"public.image"])
-    {
+    if([mediaType isEqualToString:@"public.image"]){
         UIImage* extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
         NSString* photoInString = [self imageToNSString:extractedPhoto];
         [self.contentToSend setObject:photoInString forKey:@"image"];
     }
-    else if([mediaType isEqualToString:@"public.movie"])
-    {
+    else if([mediaType isEqualToString:@"public.movie"]){
         NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerReferenceURL"] class]);
         NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerMediaURL"] class]);
-        
-        
-        
         NSString* videoInString = [self videoToNSString:info[@"UIImagePickerControllerMediaURL"]];
         [self.contentToSend setObject:videoInString forKey:@"video"];
     }
-    
     [picker dismissViewControllerAnimated:YES completion:^{
-        
     }];
-}
-
--(void) mediaButtonTapped
-{
-    if ([self systemVersionLessThan8])
-    {
-        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
-        
-        [mediaAlert show];
-    }
-    else
-    {
-        UIAlertController* mediaAlert = [UIAlertController alertControllerWithTitle:@"Share something!" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
-        
-        UIAlertAction* takePhoto = [UIAlertAction actionWithTitle:@"Take a Picture or Video"
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action){[self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
-                                                          }];
-        [mediaAlert addAction:takePhoto];
-        
-        UIAlertAction* chooseExistingPhoto = [UIAlertAction actionWithTitle:@"Choose an existing Photo or Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
-        }];
-        
-        [mediaAlert addAction:chooseExistingPhoto];
-        
-        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        }];
-        
-        [mediaAlert addAction:cancel];
-        
-        UIAlertAction* showLocation = [UIAlertAction actionWithTitle:@"Share Location" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self summonMap];
-        }];
-        
-        [mediaAlert addAction:showLocation];
-        
-        [self presentViewController:mediaAlert animated:YES completion:^{
-            
-        }];
-    }
-    
-    
 }
 
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -467,7 +453,7 @@
     }
 }
 
--(void) obtainImageFrom:(UIImagePickerControllerSourceType)sourceType{
+-(void)obtainImageFrom:(UIImagePickerControllerSourceType)sourceType{
     UIImagePickerController* imagePicker = [[UIImagePickerController alloc] init];
     imagePicker.sourceType = sourceType;
     NSArray *mediaTypesAllowed = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
@@ -497,11 +483,11 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-//    self.cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-//    self.cell.userMessageLabel.lineBreakMode=NSLineBreakByWordWrapping;
-//    self.cell.userMessageLabel.numberOfLines=0;
-//    self.cell.userInteractionEnabled=NO;
-//    self.cell.backgroundColor=[UIColor clearColor];
+    //    self.cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    //    self.cell.userMessageLabel.lineBreakMode=NSLineBreakByWordWrapping;
+    //    self.cell.userMessageLabel.numberOfLines=0;
+    //    self.cell.userInteractionEnabled=NO;
+    //    self.cell.backgroundColor=[UIColor clearColor];
     cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
     cell.textLabel.numberOfLines=0;
     cell.userInteractionEnabled=NO;
@@ -518,10 +504,10 @@
             cell.textLabel.textAlignment=NSTextAlignmentRight;
             cell.textLabel.textAlignment=NSTextAlignmentRight;
             
-//            self.cell.usernameLabel.text=self.user.name;
-//            self.cell.userMessageLabel.text=message[@"message"];
-//            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
-//            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
+            //            self.cell.usernameLabel.text=self.user.name;
+            //            self.cell.userMessageLabel.text=message[@"message"];
+            //            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
+            //            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
             
             return cell;
         }else{
@@ -532,8 +518,8 @@
             [muAtrStr appendAttributedString:atrStr];
             cell.textLabel.attributedText=muAtrStr;
             
-//            self.cell.usernameLabel.text=self.user.name;
-//            self.cell.userMessageLabel.text=message[@"message"];
+            //            self.cell.usernameLabel.text=self.user.name;
+            //            self.cell.userMessageLabel.text=message[@"message"];
             return cell;
         }
     }

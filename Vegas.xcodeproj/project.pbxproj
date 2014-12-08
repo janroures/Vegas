@@ -23,6 +23,7 @@
 		0B2430361A2698B2007E60C1 /* KJDMapKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B2430351A2698B2007E60C1 /* KJDMapKitViewController.m */; };
 		0B42BD6F1A1FE80200FCEFE7 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */; };
+		0B847D8D1A26A4B4000C2705 /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B847D8C1A26A4B4000C2705 /* plus.png */; };
 		0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */; };
 		0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */; };
 		0BAA8C641A24403800B7E5AF /* chatIDTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAA8C631A24403800B7E5AF /* chatIDTextField.m */; };
@@ -65,6 +66,7 @@
 		0B2430371A2698C6007E60C1 /* KJDMapKitViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJDMapKitViewController.h; sourceTree = "<group>"; };
 		0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomTableViewCell.h; sourceTree = "<group>"; };
 		0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomTableViewCell.m; sourceTree = "<group>"; };
+		0B847D8C1A26A4B4000C2705 /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomTableViewCell.xib; sourceTree = "<group>"; };
 		0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magnifyingglass.png; sourceTree = "<group>"; };
 		0BAA8C621A24403800B7E5AF /* chatIDTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chatIDTextField.h; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 			children = (
 				0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */,
 				0BAA8C651A2441FB00B7E5AF /* background.png */,
+				0B847D8C1A26A4B4000C2705 /* plus.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				TargetAttributes = {
 					0BB036AE1A1FE0EE0021CCF4 = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = 2XFC85G99P;
 					};
 					0BB036C71A1FE0EE0021CCF4 = {
 						CreatedOnToolsVersion = 6.1;
@@ -351,6 +355,7 @@
 				0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib in Resources */,
 				0BAA8C661A2441FB00B7E5AF /* background.png in Resources */,
 				0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */,
+				0B847D8D1A26A4B4000C2705 /* plus.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,6 +519,8 @@
 			baseConfigurationReference = CB5DAB915AC2BF4B352376B8 /* Pods-Vegas.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Vegas",
@@ -522,6 +529,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -530,6 +538,8 @@
 			baseConfigurationReference = 5DCB63D569D4265F5E712AAA /* Pods-Vegas.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Vegas",
@@ -538,6 +548,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
