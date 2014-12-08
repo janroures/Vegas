@@ -37,7 +37,7 @@
             self.user=self.chatRoom.user;
             [[NSOperationQueue mainQueue]addOperationWithBlock:^{
                 [self.tableView reloadData];
-                if (!self.messages==0) {
+                if (![self.messages count]==0) {
                     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.messages count]-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
                 }
             }];

@@ -115,6 +115,7 @@
     self.chatCodeField.layer.borderWidth=1.0f;
     self.chatCodeField.textAlignment=NSTextAlignmentCenter;
     self.chatCodeField.autocapitalizationType=UITextAutocapitalizationTypeNone;
+    self.chatCodeField.autocorrectionType=NO;
     
     NSLayoutConstraint *chatCodeFieldX = [NSLayoutConstraint constraintWithItem:self.chatCodeField
                                                                       attribute:NSLayoutAttributeCenterX
