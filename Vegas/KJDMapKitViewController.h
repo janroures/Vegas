@@ -13,5 +13,4 @@
 
 @property(strong,nonatomic) CLLocationManager* locationManager;
 
-
 @end

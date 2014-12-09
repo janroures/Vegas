@@ -23,6 +23,5 @@
 @property(strong,nonatomic)KJDChatRoom *chatRoom;
 @property(strong,nonatomic)KJDChatRoomTableViewCell *cell;
 
-
 @end
 

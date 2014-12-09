@@ -12,8 +12,8 @@
 -(instancetype)initWithUser:(KJDUser *)user{
     self=[super init];
     if (self) {
-        _user=user;
-        _messages=[[NSMutableArray alloc]init];
+        _user = user;
+        _messages = [[NSMutableArray alloc]init];
     }
     return self;
 }
@@ -23,13 +23,14 @@
 }
 
 -(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)(NSMutableArray *messages))completionBlock{
-    NSMutableArray *messagesArray=[[NSMutableArray alloc]init];
+    NSMutableArray *messagesArray = [[NSMutableArray alloc]init];
     if ([snapshot.value isKindOfClass:[NSDictionary class]]) {
         [messagesArray addObject:snapshot.value];
-    }else if ([snapshot.value isKindOfClass:[NSString class]]){
+    } else if ([snapshot.value isKindOfClass:[NSString class]]) {
         NSLog(@"%@", snapshot.value);
         [messagesArray addObject:snapshot.value];
     }
+   
     completionBlock(messagesArray);
 }
 

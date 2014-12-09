@@ -27,6 +27,7 @@
 		0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */; };
 		0B8DB7621A37881700F35E4B /* KJDChatRoomImageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B8DB7611A37881700F35E4B /* KJDChatRoomImageCell.xib */; };
 		0B8DB7651A37883400F35E4B /* KJDChatRoomImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B8DB7641A37883400F35E4B /* KJDChatRoomImageCell.m */; };
+		0B8DB7671A37972C00F35E4B /* SplashScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B8DB7661A37972C00F35E4B /* SplashScreen.xib */; };
 		0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */; };
 		0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */; };
 		0BAA8C641A24403800B7E5AF /* chatIDTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAA8C631A24403800B7E5AF /* chatIDTextField.m */; };
@@ -74,6 +75,7 @@
 		0B8DB7611A37881700F35E4B /* KJDChatRoomImageCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomImageCell.xib; sourceTree = "<group>"; };
 		0B8DB7631A37883400F35E4B /* KJDChatRoomImageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomImageCell.h; sourceTree = "<group>"; };
 		0B8DB7641A37883400F35E4B /* KJDChatRoomImageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomImageCell.m; sourceTree = "<group>"; };
+		0B8DB7661A37972C00F35E4B /* SplashScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SplashScreen.xib; sourceTree = "<group>"; };
 		0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomTableViewCell.xib; sourceTree = "<group>"; };
 		0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magnifyingglass.png; sourceTree = "<group>"; };
 		0BAA8C621A24403800B7E5AF /* chatIDTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chatIDTextField.h; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				0B8DB7611A37881700F35E4B /* KJDChatRoomImageCell.xib */,
 				0B8DB7631A37883400F35E4B /* KJDChatRoomImageCell.h */,
 				0B8DB7641A37883400F35E4B /* KJDChatRoomImageCell.m */,
+				0B8DB7661A37972C00F35E4B /* SplashScreen.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -369,6 +372,7 @@
 				0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */,
 				0B8DB7621A37881700F35E4B /* KJDChatRoomImageCell.xib in Resources */,
 				0B01E6931A366F4900577655 /* photography_camera.png in Resources */,
+				0B8DB7671A37972C00F35E4B /* SplashScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
