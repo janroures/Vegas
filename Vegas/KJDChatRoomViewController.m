@@ -543,31 +543,36 @@
 }
 
 -(void)mediaButtonTapped{
-    self.mediaButton.alpha=0.4;
-    if ([self systemVersionLessThan8]){
-        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
-        [mediaAlert show];
-    }else{
-        UIAlertController* mediaAlert = [UIAlertController alertControllerWithTitle:@"Share something!" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
-        UIAlertAction* takePhoto = [UIAlertAction actionWithTitle:@"Take a Picture or Video"
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action){[self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
-                                                          }];
-        [mediaAlert addAction:takePhoto];
-        UIAlertAction* chooseExistingPhoto = [UIAlertAction actionWithTitle:@"Choose an existing Photo or Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
-        }];
-        [mediaAlert addAction:chooseExistingPhoto];
-        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        }];
-        [mediaAlert addAction:cancel];
-        UIAlertAction* showLocation = [UIAlertAction actionWithTitle:@"Share Location" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self summonMap];
-        }];
-        [mediaAlert addAction:showLocation];
-        [self presentViewController:mediaAlert animated:YES completion:^{
-        }];
-    }
+//    self.mediaButton.alpha=0.4;
+//    if ([self systemVersionLessThan8]){
+//        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
+//        [mediaAlert show];
+//    }else{
+//        UIAlertController* mediaAlert = [UIAlertController alertControllerWithTitle:@"Share something!" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+//        UIAlertAction* takePhoto = [UIAlertAction actionWithTitle:@"Take a Picture or Video"
+//                                                            style:UIAlertActionStyleDefault
+//                                                          handler:^(UIAlertAction *action){[self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
+//                                                          }];
+//        [mediaAlert addAction:takePhoto];
+//        UIAlertAction* chooseExistingPhoto = [UIAlertAction actionWithTitle:@"Choose an existing Photo or Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+//            [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
+//        }];
+//        [mediaAlert addAction:chooseExistingPhoto];
+//        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+//        }];
+//        [mediaAlert addAction:cancel];
+//        UIAlertAction* showLocation = [UIAlertAction actionWithTitle:@"Share Location" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+//            [self summonMap];
+//        }];
+//        [mediaAlert addAction:showLocation];
+//        [self presentViewController:mediaAlert animated:YES completion:^{
+//        }];
+//    }
+    
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+    imagePicker.delegate = self;
+    
+    [self presentViewController:imagePicker animated:YES completion:nil];
 }
 
 - (void)setupTextField{
@@ -620,56 +625,57 @@
     [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
 }
 
--(void)summonMap{
-    KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
-    
-    [self presentViewController:mapKitView animated:YES completion:^{
-        
-    }];
-}
+//-(void)summonMap
+//{
+//    KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
+//    
+//    [self presentViewController:mapKitView animated:YES completion:^{
+//        
+//    }];
+//}
 
 -(NSString *)imageToNSString:(UIImage *)image{
     NSData *imageData = UIImagePNGRepresentation(image);
     return [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
--(NSString*)videoToNSString:(NSURL*)video{
-    NSData* videoData =[NSData dataWithContentsOfURL:video];
-    return [videoData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-}
+//-(NSString*)videoToNSString:(NSURL*)video{
+//    NSData* videoData =[NSData dataWithContentsOfURL:video];
+//    return [videoData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+//}
 
 -(UIImage *)stringToUIImage:(NSString *)string{
     NSData *data = [[NSData alloc]initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
     return [UIImage imageWithData:data];
 }
 
--(void)stringToVideo:(NSString*)string{
-    //may not work
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:string];
-    
-    NSURL *fileURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
-    
-    //theoretically would play video.
-    MPMoviePlayerController* videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL: fileURL];
-    
-    
-    //alternative - more to reproduce a video ; would need to know where a video is stored when saved.
-    
-    /*
-     NSString *moviePath = [[info objectForKey:
-     UIImagePickerControllerMediaURL] path];
-     if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum (moviePath))
-     {
-     UISaveVideoAtPathToSavedPhotosAlbum (moviePath,self, @selector(video:didFinishSavingWithError:contextInfo:), nil);
-     }
-     
-     //for obtaining filePath, consider also:
-     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"vid" ofType:@"mp4"];
-     
-     */
-}
+//-(void)stringToVideo:(NSString*)string{
+//    //may not work
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSString *documentsDirectory = [paths objectAtIndex:0];
+//    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:string];
+//    
+//    NSURL *fileURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
+//    
+//    //theoretically would play video.
+//    MPMoviePlayerController* videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL: fileURL];
+//    
+//    
+//    //alternative - more to reproduce a video ; would need to know where a video is stored when saved.
+//    
+//    /*
+//     NSString *moviePath = [[info objectForKey:
+//     UIImagePickerControllerMediaURL] path];
+//     if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum (moviePath))
+//     {
+//     UISaveVideoAtPathToSavedPhotosAlbum (moviePath,self, @selector(video:didFinishSavingWithError:contextInfo:), nil);
+//     }
+//     
+//     //for obtaining filePath, consider also:
+//     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"vid" ofType:@"mp4"];
+//     
+//     */
+//}
 
 -(BOOL)systemVersionLessThan8
 {
@@ -678,9 +684,9 @@
     return deviceVersion < 8.0f;
 }
 
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
 
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
-    
+    NSLog(@"Finsihed picking");
     NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
     
     if([mediaType isEqualToString:@"public.image"]){
@@ -698,37 +704,35 @@
     }];
 }
 
--(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if(buttonIndex == 1){
-        NSLog(@"QUI PILLA");
-        [self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
-    }else if (buttonIndex == 2){
-        NSLog(@"TERASS");
-        [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
-    }else if (buttonIndex == 3){
-        [self summonMap];
-    }
-}
+//-(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+//    if(buttonIndex == 1){
+//        [self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
+//    }else if (buttonIndex == 2){
+//        [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
+//    }else if (buttonIndex == 3){
+//        [self summonMap];
+//    }
+//}
 
--(void)obtainImageFrom:(UIImagePickerControllerSourceType)sourceType{
-    UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-    imagePicker.sourceType = sourceType;
-    NSArray *mediaTypesAllowed = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
-    imagePicker.mediaTypes = mediaTypesAllowed;
-    
-    //seems to be unnecessary
-    //    if (sourceType == UIImagePickerControllerSourceTypeCamera)
-    //    {
-    //        imagePicker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString*)kUTTypeMovie, kUTTypeImage, nil];
-    //    }
-    
-    imagePicker.delegate = self;
-    [self presentViewController:imagePicker
-                       animated:YES
-                     completion:^{
-                         
-                     }];
-}
+//-(void)obtainImageFrom:(UIImagePickerControllerSourceType)sourceType{
+//    UIImagePickerController* imagePicker = [[UIImagePickerController alloc] init];
+//    imagePicker.sourceType = sourceType;
+//    NSArray *mediaTypesAllowed = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+//    imagePicker.mediaTypes = mediaTypesAllowed;
+//    
+//    //seems to be unnecessary
+//    //    if (sourceType == UIImagePickerControllerSourceTypeCamera)
+//    //    {
+//    //        imagePicker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString*)kUTTypeMovie, kUTTypeImage, nil];
+//    //    }
+//    
+//    imagePicker.delegate = self;
+//    [self presentViewController:imagePicker
+//                       animated:YES
+//                     completion:^{
+//                         
+//                     }];
+//}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return [self.messages count];
@@ -793,19 +797,17 @@
                     
                     imageCell.rightImageView.image=image;
                     
-                    imageCell.backgroundColor=[UIColor clearColor];
                     
                     return imageCell;
                 }else{
                     NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
                     [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
                     
-                    imageCell.rightLabel.attributedText=muAtrStr;
-                    imageCell.rightLabel.textAlignment=NSTextAlignmentLeft;
+                    imageCell.leftLabel.attributedText=muAtrStr;
+                    imageCell.leftLabel.textAlignment=NSTextAlignmentLeft;
                     
-                    imageCell.rightImageView.image=image;
+                    imageCell.leftImageView.image=image;
                     
-                    imageCell.backgroundColor=[UIColor clearColor];
                     
                     return imageCell;
                 }
