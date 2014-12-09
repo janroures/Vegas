@@ -6,6 +6,7 @@
 #import "KJDUser.h"
 #import "KJDChatRoom.h"
 #import "KJDChatRoomTableViewCell.h"
+#import "KJDChatRoomImageCell.h"
 #import <QuartzCore/QuartzCore.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <MediaPlayer/MediaPlayer.h>

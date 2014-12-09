@@ -16,6 +16,11 @@
 @property (strong, nonatomic) UITextField *usernameTextField;
 @property (strong, nonatomic) UIButton *doneButton;
 
+@property (strong, nonatomic) NSLayoutConstraint *usernameViewTop;
+@property (strong, nonatomic) NSLayoutConstraint *usernameViewBottom;
+@property (strong, nonatomic) NSLayoutConstraint *usernameViewLeft;
+@property (strong, nonatomic) NSLayoutConstraint *usernameViewRight;
+
 @property (nonatomic)CGRect keyBoardFrame;
 
 @property(strong,nonatomic)NSMutableArray *messages;
@@ -29,7 +34,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupViewsAndConstraints];
-
+    
     UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
     CGRect frame=CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
     backgroundImage.frame=frame;
@@ -102,24 +107,81 @@
 }
 
 -(void)setViewMovedUp:(BOOL)moveUp{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.3];
     CGRect superViewRect = self.view.frame;
     CGRect usernameViewRect = self.usernameView.frame;
+    [self.view removeConstraints:@[self.usernameViewTop, self.usernameViewBottom]];
+    
+    NSLayoutConstraint *newTopConstraint = [NSLayoutConstraint constraintWithItem:self.usernameView
+                                                                        attribute:NSLayoutAttributeTop
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.view
+                                                                        attribute:NSLayoutAttributeTop
+                                                                       multiplier:1.0
+                                                                         constant:self.keyBoardFrame.size.height];
+    
+    NSLayoutConstraint *newBottomConstraint = [NSLayoutConstraint constraintWithItem:self.usernameView
+                                                                           attribute:NSLayoutAttributeBottom
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:self.view
+                                                                           attribute:NSLayoutAttributeBottom
+                                                                          multiplier:0.4
+                                                                            constant:-(self.keyBoardFrame.size.height)];
+    
+    NSLayoutConstraint *oldTopConstraint = [NSLayoutConstraint constraintWithItem:self.usernameView
+                                                                        attribute:NSLayoutAttributeTop
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.view
+                                                                        attribute:NSLayoutAttributeTop
+                                                                       multiplier:1.0
+                                                                         constant:60.0];
+    
+    NSLayoutConstraint *oldBottomConstraint = [NSLayoutConstraint constraintWithItem:self.usernameView
+                                                                           attribute:NSLayoutAttributeBottom
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:self.view
+                                                                           attribute:NSLayoutAttributeBottom
+                                                                          multiplier:0.4
+                                                                            constant:0.0];
+    
+    
+    
+    
+    
     UIEdgeInsets inset = UIEdgeInsetsMake(self.keyBoardFrame.size.height+self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
     UIEdgeInsets afterInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
     if (moveUp){
-        self.tableView.contentInset = inset;
         superViewRect.origin.y -= self.keyBoardFrame.size.height;
-        usernameViewRect.origin.y = self.usernameView.frame.origin.y;
+        [UIView transitionWithView:self.usernameView
+                          duration:0.3
+                           options:0
+                        animations:^{
+                            self.view.frame = superViewRect;
+                            self.tableView.contentInset = inset;
+                            [self.view addConstraints:@[newTopConstraint, newBottomConstraint]];
+                        }
+                        completion:^(BOOL finished) {
+                            self.usernameViewTop=newTopConstraint;
+                            self.usernameViewBottom=newBottomConstraint;
+                        }
+         ];
+        
     }else{
-        self.tableView.contentInset = afterInset;
         superViewRect.origin.y += self.keyBoardFrame.size.height;
-        usernameViewRect.origin.y = self.usernameView.frame.origin.y;
+        [UIView transitionWithView:self.usernameView
+                          duration:0.3
+                           options:0
+                        animations:^{
+                            self.view.frame = superViewRect;
+                            self.tableView.contentInset = inset;
+                            [self.view addConstraints:@[oldTopConstraint, oldBottomConstraint]];
+                        }
+                        completion:^(BOOL finished) {
+                            self.usernameViewTop=oldTopConstraint;
+                            self.usernameViewBottom=oldBottomConstraint;
+                        }
+         ];
+        self.tableView.contentInset = afterInset;
     }
-    self.view.frame = superViewRect;
-    self.usernameView.frame = usernameViewRect;
-    [UIView commitAnimations];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -140,34 +202,134 @@
 }
 
 -(void)setupUsernameView{
-    UIScreen *screen=[UIScreen mainScreen];
-    self.usernameView=[[UIView alloc]initWithFrame:CGRectMake(self.view.frame.size.width*0.33, screen.bounds.origin.y+60, self.view.frame.size.width/1.5, 130)];
-    self.usernameTextField=[[UITextField alloc]initWithFrame:CGRectMake(self.usernameView.frame.origin.x-100, self.usernameView.frame.origin.y-30, self.usernameView.frame.size.width-40, 30)];
-    self.usernameTextField.delegate=self;
-    self.doneButton=[[UIButton alloc]initWithFrame:CGRectMake(self.usernameView.frame.size.width/2-35, self.usernameTextField.frame.origin.y+40, 70, 30)];
-    [self.doneButton addTarget:self action:@selector(enterUserName) forControlEvents:UIControlEventTouchUpInside];
-    
-    //view properties
+    self.usernameView=[[UIView alloc]init];
     UIColor *backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:0.2];
     self.usernameView.backgroundColor=backgroundColor;
     self.usernameView.layer.cornerRadius=10;
+    self.usernameView.hidden=YES;
+    self.usernameView.translatesAutoresizingMaskIntoConstraints=NO;
+    [self.view addSubview:self.usernameView];
     
-    //textfield properties
+    self.usernameViewTop=[NSLayoutConstraint constraintWithItem:self.usernameView
+                                                      attribute:NSLayoutAttributeTop
+                                                      relatedBy:NSLayoutRelationEqual
+                                                         toItem:self.view
+                                                      attribute:NSLayoutAttributeTop
+                                                     multiplier:1.0
+                                                       constant:60.0];
+    
+    self.usernameViewBottom=[NSLayoutConstraint constraintWithItem:self.usernameView
+                                                         attribute:NSLayoutAttributeBottom
+                                                         relatedBy:NSLayoutRelationEqual
+                                                            toItem:self.view
+                                                         attribute:NSLayoutAttributeBottom
+                                                        multiplier:0.4
+                                                          constant:0.0];
+    
+    self.usernameViewLeft=[NSLayoutConstraint constraintWithItem:self.usernameView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       relatedBy:NSLayoutRelationEqual
+                                                          toItem:self.view
+                                                       attribute:NSLayoutAttributeLeft
+                                                      multiplier:1.0
+                                                        constant:100.0];
+    
+    self.usernameViewRight=[NSLayoutConstraint constraintWithItem:self.usernameView
+                                                        attribute:NSLayoutAttributeRight
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self.view
+                                                        attribute:NSLayoutAttributeRight
+                                                       multiplier:1.0
+                                                         constant:0.0];
+    
+    [self.view addConstraints:@[self.usernameViewTop, self.usernameViewBottom, self.usernameViewLeft, self.usernameViewRight]];
+    
+    
+    self.usernameTextField=[[UITextField alloc]init];
+    self.usernameTextField.delegate=self;
     self.usernameTextField.layer.borderWidth=1;
     self.usernameTextField.layer.cornerRadius=7;
     self.usernameTextField.backgroundColor=[UIColor whiteColor];
     self.usernameTextField.textAlignment=NSTextAlignmentCenter;
     self.usernameTextField.placeholder=@"Set username";
-    
-    //button properties
-    self.doneButton.backgroundColor=[UIColor blackColor];
-    [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
-    self.doneButton.layer.cornerRadius=7;
-    
+    self.usernameTextField.translatesAutoresizingMaskIntoConstraints=NO;
     [self.usernameView addSubview:self.usernameTextField];
+    
+    NSLayoutConstraint *textFieldTop=[NSLayoutConstraint constraintWithItem:self.usernameTextField
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.usernameView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1.0
+                                                                   constant:50.0];
+    
+    NSLayoutConstraint *textFieldBottom=[NSLayoutConstraint constraintWithItem:self.usernameTextField
+                                                                     attribute:NSLayoutAttributeBottom
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.usernameView
+                                                                     attribute:NSLayoutAttributeBottom
+                                                                    multiplier:1.0
+                                                                      constant:-80.0];
+    
+    NSLayoutConstraint *textFieldLeft=[NSLayoutConstraint constraintWithItem:self.usernameTextField
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.usernameView
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                  multiplier:1.0
+                                                                    constant:20.0];
+    
+    NSLayoutConstraint *textFieldRight=[NSLayoutConstraint constraintWithItem:self.usernameTextField
+                                                                    attribute:NSLayoutAttributeRight
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.usernameView
+                                                                    attribute:NSLayoutAttributeRight
+                                                                   multiplier:1.0
+                                                                     constant:-20.0];
+    
+    [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
+    
+    self.doneButton=[[UIButton alloc]init];
+    [self.doneButton addTarget:self action:@selector(enterUserName) forControlEvents:UIControlEventTouchUpInside];
+    [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
+    [self.doneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    self.doneButton.layer.cornerRadius=7;
+    self.doneButton.translatesAutoresizingMaskIntoConstraints=NO;
     [self.usernameView addSubview:self.doneButton];
-    [self.view addSubview:self.usernameView];
-    self.usernameView.hidden=YES;
+    
+    NSLayoutConstraint *buttonTop=[NSLayoutConstraint constraintWithItem:self.doneButton
+                                                               attribute:NSLayoutAttributeTop
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self.usernameTextField
+                                                               attribute:NSLayoutAttributeTop
+                                                              multiplier:1.0
+                                                                constant:50.0];
+    
+    NSLayoutConstraint *buttonBottom=[NSLayoutConstraint constraintWithItem:self.doneButton
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.usernameView
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                 multiplier:1.0
+                                                                   constant:-30.0];
+    
+    NSLayoutConstraint *buttonLeft=[NSLayoutConstraint constraintWithItem:self.doneButton
+                                                                attribute:NSLayoutAttributeLeft
+                                                                relatedBy:NSLayoutRelationEqual
+                                                                   toItem:self.usernameTextField
+                                                                attribute:NSLayoutAttributeLeft
+                                                               multiplier:1.0
+                                                                 constant:0.0];
+    
+    NSLayoutConstraint *buttonRight=[NSLayoutConstraint constraintWithItem:self.doneButton
+                                                                 attribute:NSLayoutAttributeRight
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.usernameTextField
+                                                                 attribute:NSLayoutAttributeRight
+                                                                multiplier:1.0
+                                                                  constant:0.0];
+    
+    [self.view addConstraints:@[buttonTop, buttonBottom, buttonLeft, buttonRight]];
 }
 
 -(void)enterUserName{
@@ -215,9 +377,12 @@
     self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
     self.tableView.clipsToBounds=YES;
-    [self.tableView registerClass:[KJDChatRoomTableViewCell class] forCellReuseIdentifier:@"Cell"];
-    self.cell = [[KJDChatRoomTableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
-    [self.tableView addSubview:self.cell];
+    [self.tableView registerClass:[KJDChatRoomTableViewCell class] forCellReuseIdentifier:@"normalCell"];
+    [self.tableView registerClass:[KJDChatRoomImageCell class] forCellReuseIdentifier:@"imageCell"];
+    KJDChatRoomTableViewCell *cell = [[KJDChatRoomTableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
+    KJDChatRoomImageCell *imageCell = [[KJDChatRoomImageCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 130)];
+    [self.tableView addSubview:cell];
+    [self.tableView addSubview:imageCell];
     self.tableView.scrollEnabled=YES;
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
@@ -283,7 +448,7 @@
     [self.sendButton addTarget:self action:@selector(sendButtonNormal) forControlEvents:UIControlEventTouchUpInside];
     self.sendButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.sendButton];
-
+    
     
     NSLayoutConstraint *sendButtonTop = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                      attribute:NSLayoutAttributeTop
@@ -331,7 +496,7 @@
     [self.mediaButton addTarget:self action:@selector(mediaButtonNormal) forControlEvents:UIControlEventTouchUpInside];
     self.mediaButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.mediaButton];
-
+    
     NSLayoutConstraint *mediaButtonTop = [NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                       attribute:NSLayoutAttributeTop
                                                                       relatedBy:NSLayoutRelationEqual
@@ -411,7 +576,7 @@
     [self.inputTextField setLeftViewMode:UITextFieldViewModeAlways];
     [self.inputTextField setLeftView:spacerView];
     self.inputTextField.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.inputTextField]; 
+    [self.view addSubview:self.inputTextField];
     
     NSLayoutConstraint *textFieldTop = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                     attribute:NSLayoutAttributeTop
@@ -566,48 +731,83 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    //    self.cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    //    self.cell.userMessageLabel.lineBreakMode=NSLineBreakByWordWrapping;
-    //    self.cell.userMessageLabel.numberOfLines=0;
-    //    self.cell.userInteractionEnabled=NO;
-    //    self.cell.backgroundColor=[UIColor clearColor];
-    cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
-    cell.textLabel.numberOfLines=0;
-    cell.userInteractionEnabled=NO;
     if (![self.messages count]==0) {
         NSMutableDictionary *message=self.messages[indexPath.row];
-        NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
-        if ([message[@"user"] isEqualToString:self.user.name]) {
-            NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
-            [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
-            NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
-            [muAtrStr appendAttributedString:atrStr];
-            cell.textLabel.attributedText=muAtrStr;
-            cell.backgroundColor=[UIColor clearColor];
-            cell.textLabel.textAlignment=NSTextAlignmentRight;
-            cell.textLabel.textAlignment=NSTextAlignmentRight;
+        if ([message objectForKey:@"message"]!=nil) {
+            KJDChatRoomTableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"normalCell" forIndexPath:indexPath];
+            cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
+            cell.textLabel.numberOfLines=0;
+            cell.userInteractionEnabled=NO;
+            NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
+            if ([message[@"user"] isEqualToString:self.user.name]) {
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
+                NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
+                [muAtrStr appendAttributedString:atrStr];
+                cell.textLabel.attributedText=muAtrStr;
+                cell.backgroundColor=[UIColor clearColor];
+                cell.textLabel.textAlignment=NSTextAlignmentRight;
+                cell.textLabel.textAlignment=NSTextAlignmentRight;
+                
+                //            self.cell.usernameLabel.text=self.user.name;
+                //            self.cell.userMessageLabel.text=message[@"message"];
+                //            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
+                //            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
+                
+                return cell;
+            }else{
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
+                NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
+                cell.backgroundColor=[UIColor clearColor];
+                [muAtrStr appendAttributedString:atrStr];
+                cell.textLabel.attributedText=muAtrStr;
+                
+                //            self.cell.usernameLabel.text=self.user.name;
+                //            self.cell.userMessageLabel.text=message[@"message"];
+                return cell;
+            }
             
-            //            self.cell.usernameLabel.text=self.user.name;
-            //            self.cell.userMessageLabel.text=message[@"message"];
-            //            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
-            //            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
             
-            return cell;
         }else{
-            NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
-            [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
-            NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
-            cell.backgroundColor=[UIColor clearColor];
-            [muAtrStr appendAttributedString:atrStr];
-            cell.textLabel.attributedText=muAtrStr;
-            
-            //            self.cell.usernameLabel.text=self.user.name;
-            //            self.cell.userMessageLabel.text=message[@"message"];
-            return cell;
+            KJDChatRoomImageCell *imageCell=[tableView dequeueReusableCellWithIdentifier:@"imageCell"];
+            if ([message objectForKey:@"image"]!=nil) {
+                NSString *imageString=message[@"image"];
+                
+                
+                if ([message[@"user"] isEqualToString:self.user.name]) {
+                    NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                    [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
+                    NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:imageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
+                    [muAtrStr appendAttributedString:atrStr];
+                    imageCell.textLabel.attributedText=muAtrStr;
+                    imageCell.backgroundColor=[UIColor clearColor];
+                    imageCell.textLabel.textAlignment=NSTextAlignmentRight;
+                    imageCell.textLabel.textAlignment=NSTextAlignmentRight;
+                    
+                    //            self.cell.usernameLabel.text=self.user.name;
+                    //            self.cell.userMessageLabel.text=message[@"message"];
+                    //            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
+                    //            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
+                    
+                    return imageCell;
+                }else{
+                    NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                    [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
+                    NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:imageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
+                    imageCell.backgroundColor=[UIColor clearColor];
+                    [muAtrStr appendAttributedString:atrStr];
+                    imageCell.textLabel.attributedText=muAtrStr;
+                    
+                    //            self.cell.usernameLabel.text=self.user.name;
+                    //            self.cell.userMessageLabel.text=message[@"message"];
+                    return imageCell;
+                }
+            }
         }
     }
-    return cell;
+    return nil;
 }
 
 @end
+
