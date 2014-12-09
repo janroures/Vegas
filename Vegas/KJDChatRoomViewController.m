@@ -794,7 +794,7 @@
                     
                     imageCell.rightLabel.attributedText=muAtrStr;
                     imageCell.rightLabel.textAlignment=NSTextAlignmentRight;
-                    
+                    imageCell.backgroundColor=[UIColor clearColor];
                     imageCell.rightImageView.image=image;
                     
                     
@@ -805,7 +805,7 @@
                     
                     imageCell.leftLabel.attributedText=muAtrStr;
                     imageCell.leftLabel.textAlignment=NSTextAlignmentLeft;
-                    
+                    imageCell.backgroundColor=[UIColor clearColor];
                     imageCell.leftImageView.image=image;
                     
                     
