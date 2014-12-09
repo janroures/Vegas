@@ -63,6 +63,11 @@
     [UIView commitAnimations];
 }
 
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    [self.view resignFirstResponder];
+    [self.view endEditing:YES];
+}
+
 -(void)keyboardWillShow:(NSNotification *)notification{
     NSDictionary *keyboardInfo = [notification userInfo];
     NSValue *keyboardFrameBegin = [keyboardInfo valueForKey:UIKeyboardFrameBeginUserInfoKey];
@@ -99,11 +104,6 @@
     [UIView commitAnimations];
 }
 
-//-(BOOL)textFieldShouldReturn:(UITextField *)textField{
-//    [textField resignFirstResponder];
-//    return YES;
-//}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
@@ -126,10 +126,8 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
-- (void)setupTableView
-{
+- (void)setupTableView{
     self.tableView = [[UITableView alloc] init];
-    [self.view addSubview:self.tableView];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
@@ -141,6 +139,9 @@
     [self.tableView addSubview:self.cell];
     self.tableView.scrollEnabled=YES;
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
+    [self.tableView addGestureRecognizer:gestureRecognizer];
+    [self.view addSubview:self.tableView];
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                     attribute:NSLayoutAttributeTop
@@ -169,6 +170,11 @@
     [self.view addConstraints:@[tableViewTop, tableViewBottom, tableViewWidth]];
 }
 
+-(void)hideKeyboard{
+    [self.view resignFirstResponder];
+    [self.view endEditing:YES];
+}
+
 - (void)sendButtonTapped{
     self.sendButton.backgroundColor=[UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
 }
@@ -187,7 +193,6 @@
 
 - (void)setupSendButton{
     self.sendButton = [[UIButton alloc] init];
-    [self.view addSubview:self.sendButton];
     self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
     self.sendButton.layer.cornerRadius=10.0f;
     self.sendButton.layer.masksToBounds=YES;
@@ -196,8 +201,8 @@
     [self.sendButton addTarget:self action:@selector(sendButtonTapped) forControlEvents:UIControlEventTouchDown];
     [self.sendButton addTarget:self action:@selector(sendButtonNormal) forControlEvents:UIControlEventTouchUpInside];
     self.sendButton.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    
+    [self.view addSubview:self.sendButton];
+
     
     NSLayoutConstraint *sendButtonTop = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                      attribute:NSLayoutAttributeTop
@@ -236,27 +241,23 @@
 
 -(void)setupMediaButton{
     self.mediaButton = [[UIButton alloc] init];
-    [self.view addSubview:self.mediaButton];
     [self.mediaButton addTarget:self
                          action:@selector(mediaButtonTapped)
                forControlEvents:UIControlEventTouchUpInside];
-    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    [self.mediaButton setImage:[UIImage imageNamed:@"plus"] forState:UIControlStateNormal];
-    self.mediaButton.contentMode=UIViewContentModeCenter;
-    self.mediaButton.layer.cornerRadius=10.0f;
-    self.mediaButton.layer.masksToBounds=YES;
+    [self.mediaButton setImage:[UIImage imageNamed:@"photography_camera"] forState:UIControlStateNormal];
+    self.mediaButton.alpha=0.8;
     [self.mediaButton addTarget:self action:@selector(mediaButtonTapped) forControlEvents:UIControlEventTouchDown];
     [self.mediaButton addTarget:self action:@selector(mediaButtonNormal) forControlEvents:UIControlEventTouchUpInside];
-    
     self.mediaButton.translatesAutoresizingMaskIntoConstraints = NO;
-    
+    [self.view addSubview:self.mediaButton];
+
     NSLayoutConstraint *mediaButtonTop = [NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                       attribute:NSLayoutAttributeTop
                                                                       relatedBy:NSLayoutRelationEqual
                                                                          toItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeTop
                                                                      multiplier:1.0
-                                                                       constant:0.0];
+                                                                       constant:8.0];
     
     NSLayoutConstraint *mediaButtonBottom =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                         attribute:NSLayoutAttributeBottom
@@ -264,7 +265,7 @@
                                                                            toItem:self.inputTextField
                                                                         attribute:NSLayoutAttributeBottom
                                                                        multiplier:1.0
-                                                                         constant:0.0];
+                                                                         constant:-8.0];
     
     NSLayoutConstraint *mediaButtonLeft =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                       attribute:NSLayoutAttributeLeft
@@ -285,11 +286,11 @@
 }
 
 -(void)mediaButtonNormal{
-    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.mediaButton.alpha=0.8;
 }
 
 -(void)mediaButtonTapped{
-    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
+    self.mediaButton.alpha=0.4;
     if ([self systemVersionLessThan8]){
         UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
         [mediaAlert show];
