@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B01E6931A366F4900577655 /* photography_camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B01E6921A366F4900577655 /* photography_camera.png */; };
+		0B01E6951A367DBD00577655 /* settingsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B01E6941A367DBD00577655 /* settingsIcon.png */; };
 		0B24301C1A2696AC007E60C1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B24301B1A2696AC007E60C1 /* MediaPlayer.framework */; };
 		0B24301F1A2696B7007E60C1 /* libMobileGestalt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B24301D1A2696B7007E60C1 /* libMobileGestalt.dylib */; };
 		0B2430201A2696B7007E60C1 /* libMobileGestaltExtensions.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B24301E1A2696B7007E60C1 /* libMobileGestaltExtensions.dylib */; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		0B01E6921A366F4900577655 /* photography_camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photography_camera.png; sourceTree = "<group>"; };
+		0B01E6941A367DBD00577655 /* settingsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settingsIcon.png; sourceTree = "<group>"; };
 		0B24301B1A2696AC007E60C1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		0B24301D1A2696B7007E60C1 /* libMobileGestalt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMobileGestalt.dylib; path = usr/lib/libMobileGestalt.dylib; sourceTree = SDKROOT; };
 		0B24301E1A2696B7007E60C1 /* libMobileGestaltExtensions.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMobileGestaltExtensions.dylib; path = usr/lib/libMobileGestaltExtensions.dylib; sourceTree = SDKROOT; };
@@ -141,6 +143,7 @@
 				0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */,
 				0BAA8C651A2441FB00B7E5AF /* background.png */,
 				0B01E6921A366F4900577655 /* photography_camera.png */,
+				0B01E6941A367DBD00577655 /* settingsIcon.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib in Resources */,
+				0B01E6951A367DBD00577655 /* settingsIcon.png in Resources */,
 				0BAA8C661A2441FB00B7E5AF /* background.png in Resources */,
 				0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */,
 				0B01E6931A366F4900577655 /* photography_camera.png in Resources */,

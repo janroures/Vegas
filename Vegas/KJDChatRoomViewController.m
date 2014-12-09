@@ -3,6 +3,7 @@
 //  Vegas
 
 #import "KJDChatRoomViewController.h"
+#import <RNBlurModalView.h>
 
 @interface KJDChatRoomViewController ()
 
@@ -10,6 +11,10 @@
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIButton *sendButton;
 @property (strong, nonatomic) UIButton *mediaButton;
+
+@property (strong, nonatomic) UIView *usernameView;
+@property (strong, nonatomic) UITextField *usernameTextField;
+@property (strong, nonatomic) UIButton *doneButton;
 
 @property (nonatomic)CGRect keyBoardFrame;
 
@@ -23,8 +28,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
+
     UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
     CGRect frame=CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
     backgroundImage.frame=frame;
@@ -63,6 +68,15 @@
     [UIView commitAnimations];
 }
 
+- (void)setupViewsAndConstraints {
+    [self setupNavigationBar];
+    [self setupTableView];
+    [self setupUsernameView];
+    [self setupTextField];
+    [self setupSendButton];
+    [self setupMediaButton];
+}
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     [self.view resignFirstResponder];
     [self.view endEditing:YES];
@@ -91,16 +105,20 @@
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3];
     CGRect superViewRect = self.view.frame;
+    CGRect usernameViewRect = self.usernameView.frame;
     UIEdgeInsets inset = UIEdgeInsetsMake(self.keyBoardFrame.size.height+self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
     UIEdgeInsets afterInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
     if (moveUp){
         self.tableView.contentInset = inset;
         superViewRect.origin.y -= self.keyBoardFrame.size.height;
+        usernameViewRect.origin.y = self.usernameView.frame.origin.y;
     }else{
         self.tableView.contentInset = afterInset;
         superViewRect.origin.y += self.keyBoardFrame.size.height;
+        usernameViewRect.origin.y = self.usernameView.frame.origin.y;
     }
     self.view.frame = superViewRect;
+    self.usernameView.frame = usernameViewRect;
     [UIView commitAnimations];
 }
 
@@ -108,22 +126,85 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void)setupViewsAndConstraints {
-    [self setupNavigationBar];
-    [self setupTableView];
-    [self setupTextField];
-    [self setupSendButton];
-    [self setupMediaButton];
-}
-
 -(void)setupNavigationBar{
     self.navigationItem.title=self.chatRoom.firebaseRoomURL;
+    self.navigationController.navigationBar.tintColor=[UIColor blackColor];
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settingsIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleUsernameView)];
+    [self.navigationItem setRightBarButtonItem:rightItem];
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
                                                   forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [UIImage new];
     self.navigationController.navigationBar.translucent = YES;
     self.navigationController.view.backgroundColor = [UIColor clearColor];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+}
+
+-(void)setupUsernameView{
+    UIScreen *screen=[UIScreen mainScreen];
+    self.usernameView=[[UIView alloc]initWithFrame:CGRectMake(self.view.frame.size.width*0.33, screen.bounds.origin.y+60, self.view.frame.size.width/1.5, 130)];
+    self.usernameTextField=[[UITextField alloc]initWithFrame:CGRectMake(self.usernameView.frame.origin.x-100, self.usernameView.frame.origin.y-30, self.usernameView.frame.size.width-40, 30)];
+    self.usernameTextField.delegate=self;
+    self.doneButton=[[UIButton alloc]initWithFrame:CGRectMake(self.usernameView.frame.size.width/2-35, self.usernameTextField.frame.origin.y+40, 70, 30)];
+    [self.doneButton addTarget:self action:@selector(enterUserName) forControlEvents:UIControlEventTouchUpInside];
+    
+    //view properties
+    UIColor *backgroundColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:0.2];
+    self.usernameView.backgroundColor=backgroundColor;
+    self.usernameView.layer.cornerRadius=10;
+    
+    //textfield properties
+    self.usernameTextField.layer.borderWidth=1;
+    self.usernameTextField.layer.cornerRadius=7;
+    self.usernameTextField.backgroundColor=[UIColor whiteColor];
+    self.usernameTextField.textAlignment=NSTextAlignmentCenter;
+    self.usernameTextField.placeholder=@"Set username";
+    
+    //button properties
+    self.doneButton.backgroundColor=[UIColor blackColor];
+    [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
+    self.doneButton.layer.cornerRadius=7;
+    
+    [self.usernameView addSubview:self.usernameTextField];
+    [self.usernameView addSubview:self.doneButton];
+    [self.view addSubview:self.usernameView];
+    self.usernameView.hidden=YES;
+}
+
+-(void)enterUserName{
+    if (![self.usernameTextField.text isEqualToString:@""]) {
+        self.user.name=self.usernameTextField.text;
+        [UIView transitionWithView:self.usernameView
+                          duration:0.4
+                           options:UIViewAnimationOptionTransitionFlipFromRight
+                        animations:^{
+                            self.usernameView.hidden=YES;
+                        }
+                        completion:nil];
+        [self.tableView reloadData];
+    }else{
+        RNBlurModalView *modal = [[RNBlurModalView alloc] initWithViewController:self title:@"Username field is empty" message:@"Please insert a valid username"];
+        [modal show];
+    }
+}
+
+-(void)toggleUsernameView{
+    if (self.usernameView.hidden) {
+        [UIView transitionWithView:self.usernameView
+                          duration:0.4
+                           options:UIViewAnimationOptionTransitionFlipFromRight
+                        animations:^{
+                            self.usernameView.hidden=NO;
+                        }
+                        completion:nil];
+    }else{
+        [UIView transitionWithView:self.usernameView
+                          duration:0.4
+                           options:UIViewAnimationOptionTransitionFlipFromRight
+                        animations:^{
+                            self.usernameView.hidden=YES;
+                        }
+                        completion:nil];
+    }
 }
 
 - (void)setupTableView{
@@ -319,7 +400,7 @@
 
 - (void)setupTextField{
     self.inputTextField = [[UITextField alloc] init];
-    [self.view addSubview:self.inputTextField];
+    self.inputTextField.delegate=self;
     self.inputTextField.layer.cornerRadius=10.0f;
     self.inputTextField.layer.masksToBounds=YES;
     UIColor *borderColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
@@ -329,8 +410,8 @@
     UIView *spacerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
     [self.inputTextField setLeftViewMode:UITextFieldViewModeAlways];
     [self.inputTextField setLeftView:spacerView];
-    
     self.inputTextField.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.inputTextField]; 
     
     NSLayoutConstraint *textFieldTop = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                     attribute:NSLayoutAttributeTop
