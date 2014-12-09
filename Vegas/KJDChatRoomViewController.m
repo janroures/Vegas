@@ -11,11 +11,12 @@
 @property (strong, nonatomic) UIButton *sendButton;
 @property (strong, nonatomic) UIButton *mediaButton;
 
-@property (nonatomic)CGRect keyBoardFrame;
+@property (nonatomic) CGRect keyBoardFrame;
 
-@property(strong,nonatomic)NSMutableArray *messages;
+@property (strong,nonatomic) NSMutableArray *messages;
 
-@property(strong, nonatomic) NSMutableDictionary* contentToSend;
+@property (strong, nonatomic) NSMutableDictionary *contentToSend;
+@property (strong, nonatomic) UIImage *extractedPhoto;
 
 @end
 
@@ -26,23 +27,24 @@
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
     UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
-    CGRect frame=CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-    backgroundImage.frame=frame;
+    CGRect frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+    backgroundImage.frame = frame;
     [self.view addSubview:backgroundImage];
     [self.view sendSubviewToBack:backgroundImage];
     
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
-            self.messages=self.chatRoom.messages;
-            self.user=self.chatRoom.user;
+            self.messages = self.chatRoom.messages;
+            self.user = self.chatRoom.user;
             [[NSOperationQueue mainQueue]addOperationWithBlock:^{
                 [self.tableView reloadData];
-                if (![self.messages count]==0) {
+                if (![self.messages count] == 0) {
                     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.messages count]-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
                 }
             }];
         }
     }];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -53,6 +55,7 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     
+    //this line may be unecessary
     self.contentToSend = [[NSMutableDictionary alloc] init];
 }
 
@@ -93,6 +96,7 @@
     CGRect superViewRect = self.view.frame;
     UIEdgeInsets inset = UIEdgeInsetsMake(self.keyBoardFrame.size.height+self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
     UIEdgeInsets afterInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
+    
     if (moveUp){
         self.tableView.contentInset = inset;
         superViewRect.origin.y -= self.keyBoardFrame.size.height;
@@ -131,13 +135,15 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
-    self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
+    self.tableView.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
+    
+    [self.view addSubview:self.tableView];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
-    self.tableView.clipsToBounds=YES;
+    self.tableView.clipsToBounds = YES;
     [self.tableView registerClass:[KJDChatRoomTableViewCell class] forCellReuseIdentifier:@"Cell"];
-    self.cell = [[KJDChatRoomTableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
+    self.cell = [[KJDChatRoomTableViewCell alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
     [self.tableView addSubview:self.cell];
-    self.tableView.scrollEnabled=YES;
+    self.tableView.scrollEnabled = YES;
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     [self.tableView addGestureRecognizer:gestureRecognizer];
@@ -182,13 +188,13 @@
 -(void)sendButtonNormal{
     if (![self.inputTextField.text isEqualToString:@""] && ![self.inputTextField.text isEqualToString:@" "]) {
         NSString *message = self.inputTextField.text;
-        self.sendButton.titleLabel.textColor=[UIColor grayColor];
+        self.sendButton.titleLabel.textColor = [UIColor grayColor];
         [self.chatRoom.firebase setValue:@{@"user":self.user.name,
                                            @"message":message}];
         self.inputTextField.text = @"";
     }
-    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    self.sendButton.titleLabel.textColor=[UIColor whiteColor];
+    self.sendButton.backgroundColor = [UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.sendButton.titleLabel.textColor = [UIColor whiteColor];
 }
 
 - (void)setupSendButton{
@@ -427,21 +433,21 @@
 }
 
 
--(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
-    NSLog(@"dictionnary = %@", info);
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
+
     NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
-    NSLog(@"mediaType = %@", mediaType);
+
     if([mediaType isEqualToString:@"public.image"]){
-        UIImage* extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
-        NSString* photoInString = [self imageToNSString:extractedPhoto];
-        [self.contentToSend setObject:photoInString forKey:@"image"];
+        self.extractedPhoto = info[@"UIImagePickerControllerOriginalImage"];
+        
+        NSOperationQueue *imageSendQueue = [[NSOperationQueue alloc] init];
+        [imageSendQueue addOperationWithBlock:^{
+            NSString *photoInString = [self imageToNSString:self.extractedPhoto];
+            [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+                                               @"image":photoInString}];
+        }];
     }
-    else if([mediaType isEqualToString:@"public.movie"]){
-        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerReferenceURL"] class]);
-        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerMediaURL"] class]);
-        NSString* videoInString = [self videoToNSString:info[@"UIImagePickerControllerMediaURL"]];
-        [self.contentToSend setObject:videoInString forKey:@"video"];
-    }
+    
     [picker dismissViewControllerAnimated:YES completion:^{
     }];
 }
@@ -491,12 +497,12 @@
     //    self.cell.userMessageLabel.numberOfLines=0;
     //    self.cell.userInteractionEnabled=NO;
     //    self.cell.backgroundColor=[UIColor clearColor];
-    cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
-    cell.textLabel.numberOfLines=0;
-    cell.userInteractionEnabled=NO;
-    if (![self.messages count]==0) {
-        NSMutableDictionary *message=self.messages[indexPath.row];
-        NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    cell.textLabel.numberOfLines = 0;
+    cell.userInteractionEnabled = NO;
+    if (![self.messages count] == 0) {
+        NSMutableDictionary *message = self.messages[indexPath.row];
+        NSString *messageString = [NSString stringWithFormat:@"\n%@", message[@"message"]];
         if ([message[@"user"] isEqualToString:self.user.name]) {
             NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
             [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
@@ -526,6 +532,7 @@
             return cell;
         }
     }
+    
     return cell;
 }
 
