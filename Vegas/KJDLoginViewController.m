@@ -43,8 +43,8 @@
         self.chatCodeField.text=@"";
     }else{
         self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
-        self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
-        self.chatRoom.user=self.user;
+        self.chatRoom.firebaseRoomURL = self.chatCodeField.text;
+        self.chatRoom.user = self.user;
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
         destinationViewController.chatRoom=self.chatRoom;
         [self.navigationController pushViewController:destinationViewController animated:YES];
@@ -104,18 +104,18 @@
 {
     self.chatCodeField = [[chatIDTextField alloc] init];
     [self.view addSubview:self.chatCodeField];
-    self.chatCodeField.delegate=self;
+    self.chatCodeField.delegate = self;
     self.chatCodeField.translatesAutoresizingMaskIntoConstraints = NO;
-    self.chatCodeField.layer.cornerRadius=10.0f;
-    self.chatCodeField.layer.masksToBounds=YES;
-    UIColor *borderColor=[UIColor colorWithRed:0 green:0 blue:0 alpha:0.3];
-    self.chatCodeField.rightViewMode=UITextFieldViewModeAlways;
-    self.chatCodeField.rightView=[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"magnifyingglass"]];
-    self.chatCodeField.layer.borderColor=[borderColor CGColor];
-    self.chatCodeField.layer.borderWidth=1.0f;
-    self.chatCodeField.textAlignment=NSTextAlignmentCenter;
-    self.chatCodeField.autocapitalizationType=UITextAutocapitalizationTypeNone;
-    self.chatCodeField.autocorrectionType=NO;
+    self.chatCodeField.layer.cornerRadius = 10.0f;
+    self.chatCodeField.layer.masksToBounds = YES;
+    UIColor *borderColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.3];
+    self.chatCodeField.rightViewMode = UITextFieldViewModeAlways;
+    self.chatCodeField.rightView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"magnifyingglass"]];
+    self.chatCodeField.layer.borderColor = [borderColor CGColor];
+    self.chatCodeField.layer.borderWidth = 1.0f;
+    self.chatCodeField.textAlignment = NSTextAlignmentCenter;
+    self.chatCodeField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.chatCodeField.autocorrectionType = NO;
     
     NSLayoutConstraint *chatCodeFieldX = [NSLayoutConstraint constraintWithItem:self.chatCodeField
                                                                       attribute:NSLayoutAttributeCenterX
@@ -157,8 +157,8 @@
     self.enterButton = [[UIButton alloc] init];
     [self.view addSubview:self.enterButton];
     [self.enterButton setTitle:@"Enter Chat" forState:UIControlStateNormal];
-    self.enterButton.layer.cornerRadius=10.0f;
-    self.enterButton.layer.masksToBounds=YES;
+    self.enterButton.layer.cornerRadius = 10.0f;
+    self.enterButton.layer.masksToBounds = YES;
     self.enterButton.backgroundColor = [UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
     [self.enterButton addTarget:self action:@selector(enterButtonTappedForBackground) forControlEvents:UIControlEventTouchDown];
     [self.enterButton addTarget:self action:@selector(enterButtonReleased) forControlEvents:UIControlEventTouchUpInside];
@@ -199,23 +199,27 @@
     [self.view addConstraints:@[enterButtonX, enterButtonTop, enterButtonWidth, enterButtonHeight]];
 }
 
--(void)enterButtonReleased{
-    self.enterButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    if ([self.chatCodeField.text length]<4) {
-        RNBlurModalView *modal = [[RNBlurModalView alloc] initWithViewController:self title:@"Invalid Chat ID!" message:@"The code must be at least 4 characters long"];
+-(void)enterButtonReleased
+{
+    self.enterButton.backgroundColor = [UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    if ([self.chatCodeField.text length] < 4) {
+        RNBlurModalView *modal = [[RNBlurModalView alloc] initWithViewController:self
+                                                                           title:@"Invalid Chat ID!"
+                                                                         message:@"The code must be at least 4 characters long"];
         [modal show];
-        self.chatCodeField.text=@"";
-    }else{
-        self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
-        self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
-        self.chatRoom.user=self.user;
+        self.chatCodeField.text = @"";
+    } else {
+        self.chatRoom = [[KJDChatRoom alloc]initWithUser:self.user];
+        self.chatRoom.firebaseRoomURL = self.chatCodeField.text;
+        self.chatRoom.user = self.user;
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
-        destinationViewController.chatRoom=self.chatRoom;
+        destinationViewController.chatRoom = self.chatRoom;
         [self.navigationController pushViewController:destinationViewController animated:YES];
     }
 }
 
--(void)enterButtonTappedForBackground{
+-(void)enterButtonTappedForBackground
+{
     self.enterButton.backgroundColor = [UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
 }
 

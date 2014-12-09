@@ -17,6 +17,7 @@
     if (self) {
         self.clipsToBounds = YES;
     }
+    
     return self;
 }
 

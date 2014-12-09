@@ -11,9 +11,9 @@
 @property (strong, nonatomic) UIButton *sendButton;
 @property (strong, nonatomic) UIButton *mediaButton;
 
-@property (nonatomic)CGRect keyBoardFrame;
+@property (nonatomic) CGRect keyBoardFrame;
 
-@property(strong,nonatomic)NSMutableArray *messages;
+@property(strong,nonatomic) NSMutableArray *messages;
 
 @property(strong, nonatomic) NSMutableDictionary* contentToSend;
 
@@ -26,23 +26,24 @@
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
     UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
-    CGRect frame=CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-    backgroundImage.frame=frame;
+    CGRect frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+    backgroundImage.frame = frame;
     [self.view addSubview:backgroundImage];
     [self.view sendSubviewToBack:backgroundImage];
     
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
-            self.messages=self.chatRoom.messages;
-            self.user=self.chatRoom.user;
+            self.messages = self.chatRoom.messages;
+            self.user = self.chatRoom.user;
             [[NSOperationQueue mainQueue]addOperationWithBlock:^{
                 [self.tableView reloadData];
-                if (![self.messages count]==0) {
+                if (![self.messages count] == 0) {
                     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.messages count]-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
                 }
             }];
         }
     }];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -88,6 +89,7 @@
     CGRect superViewRect = self.view.frame;
     UIEdgeInsets inset = UIEdgeInsetsMake(self.keyBoardFrame.size.height+self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
     UIEdgeInsets afterInset = UIEdgeInsetsMake(self.navigationController.navigationBar.frame.size.height+20, 0, 0, 0);
+    
     if (moveUp){
         self.tableView.contentInset = inset;
         superViewRect.origin.y -= self.keyBoardFrame.size.height;
@@ -129,17 +131,18 @@
 - (void)setupTableView
 {
     self.tableView = [[UITableView alloc] init];
-    [self.view addSubview:self.tableView];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
-    self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
+    self.tableView.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
+    
+    [self.view addSubview:self.tableView];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
-    self.tableView.clipsToBounds=YES;
+    self.tableView.clipsToBounds = YES;
     [self.tableView registerClass:[KJDChatRoomTableViewCell class] forCellReuseIdentifier:@"Cell"];
-    self.cell = [[KJDChatRoomTableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
+    self.cell = [[KJDChatRoomTableViewCell alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
     [self.tableView addSubview:self.cell];
-    self.tableView.scrollEnabled=YES;
+    self.tableView.scrollEnabled = YES;
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
@@ -426,13 +429,13 @@
 }
 
 
--(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
     NSLog(@"dictionnary = %@", info);
     NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
     NSLog(@"mediaType = %@", mediaType);
     if([mediaType isEqualToString:@"public.image"]){
-        UIImage* extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
-        NSString* photoInString = [self imageToNSString:extractedPhoto];
+        UIImage *extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
+        NSString *photoInString = [self imageToNSString:extractedPhoto];
         [self.contentToSend setObject:photoInString forKey:@"image"];
     }
     else if([mediaType isEqualToString:@"public.movie"]){
