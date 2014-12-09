@@ -13,9 +13,10 @@
 
 @property (nonatomic) CGRect keyBoardFrame;
 
-@property(strong,nonatomic) NSMutableArray *messages;
+@property (strong,nonatomic) NSMutableArray *messages;
 
-@property(strong, nonatomic) NSMutableDictionary* contentToSend;
+@property (strong, nonatomic) NSMutableDictionary *contentToSend;
+@property (strong, nonatomic) UIImage *extractedPhoto;
 
 @end
 
@@ -54,6 +55,7 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     
+    //this line may be unecessary
     self.contentToSend = [[NSMutableDictionary alloc] init];
 }
 
@@ -62,6 +64,11 @@
     [UIView setAnimationDuration:0.3];
     [self.navigationController setNavigationBarHidden:NO];
     [UIView commitAnimations];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    [self.view resignFirstResponder];
+    [self.view endEditing:YES];
 }
 
 -(void)keyboardWillShow:(NSNotification *)notification{
@@ -101,11 +108,6 @@
     [UIView commitAnimations];
 }
 
-//-(BOOL)textFieldShouldReturn:(UITextField *)textField{
-//    [textField resignFirstResponder];
-//    return YES;
-//}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
@@ -128,8 +130,7 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
-- (void)setupTableView
-{
+- (void)setupTableView{
     self.tableView = [[UITableView alloc] init];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -144,6 +145,9 @@
     [self.tableView addSubview:self.cell];
     self.tableView.scrollEnabled = YES;
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
+    [self.tableView addGestureRecognizer:gestureRecognizer];
+    [self.view addSubview:self.tableView];
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                     attribute:NSLayoutAttributeTop
@@ -172,6 +176,11 @@
     [self.view addConstraints:@[tableViewTop, tableViewBottom, tableViewWidth]];
 }
 
+-(void)hideKeyboard{
+    [self.view resignFirstResponder];
+    [self.view endEditing:YES];
+}
+
 - (void)sendButtonTapped{
     self.sendButton.backgroundColor=[UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
 }
@@ -179,18 +188,17 @@
 -(void)sendButtonNormal{
     if (![self.inputTextField.text isEqualToString:@""] && ![self.inputTextField.text isEqualToString:@" "]) {
         NSString *message = self.inputTextField.text;
-        self.sendButton.titleLabel.textColor=[UIColor grayColor];
+        self.sendButton.titleLabel.textColor = [UIColor grayColor];
         [self.chatRoom.firebase setValue:@{@"user":self.user.name,
                                            @"message":message}];
         self.inputTextField.text = @"";
     }
-    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    self.sendButton.titleLabel.textColor=[UIColor whiteColor];
+    self.sendButton.backgroundColor = [UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.sendButton.titleLabel.textColor = [UIColor whiteColor];
 }
 
 - (void)setupSendButton{
     self.sendButton = [[UIButton alloc] init];
-    [self.view addSubview:self.sendButton];
     self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
     self.sendButton.layer.cornerRadius=10.0f;
     self.sendButton.layer.masksToBounds=YES;
@@ -199,8 +207,8 @@
     [self.sendButton addTarget:self action:@selector(sendButtonTapped) forControlEvents:UIControlEventTouchDown];
     [self.sendButton addTarget:self action:@selector(sendButtonNormal) forControlEvents:UIControlEventTouchUpInside];
     self.sendButton.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    
+    [self.view addSubview:self.sendButton];
+
     
     NSLayoutConstraint *sendButtonTop = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                      attribute:NSLayoutAttributeTop
@@ -239,27 +247,23 @@
 
 -(void)setupMediaButton{
     self.mediaButton = [[UIButton alloc] init];
-    [self.view addSubview:self.mediaButton];
     [self.mediaButton addTarget:self
                          action:@selector(mediaButtonTapped)
                forControlEvents:UIControlEventTouchUpInside];
-    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    [self.mediaButton setImage:[UIImage imageNamed:@"plus"] forState:UIControlStateNormal];
-    self.mediaButton.contentMode=UIViewContentModeCenter;
-    self.mediaButton.layer.cornerRadius=10.0f;
-    self.mediaButton.layer.masksToBounds=YES;
+    [self.mediaButton setImage:[UIImage imageNamed:@"photography_camera"] forState:UIControlStateNormal];
+    self.mediaButton.alpha=0.8;
     [self.mediaButton addTarget:self action:@selector(mediaButtonTapped) forControlEvents:UIControlEventTouchDown];
     [self.mediaButton addTarget:self action:@selector(mediaButtonNormal) forControlEvents:UIControlEventTouchUpInside];
-    
     self.mediaButton.translatesAutoresizingMaskIntoConstraints = NO;
-    
+    [self.view addSubview:self.mediaButton];
+
     NSLayoutConstraint *mediaButtonTop = [NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                       attribute:NSLayoutAttributeTop
                                                                       relatedBy:NSLayoutRelationEqual
                                                                          toItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeTop
                                                                      multiplier:1.0
-                                                                       constant:0.0];
+                                                                       constant:8.0];
     
     NSLayoutConstraint *mediaButtonBottom =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                         attribute:NSLayoutAttributeBottom
@@ -267,7 +271,7 @@
                                                                            toItem:self.inputTextField
                                                                         attribute:NSLayoutAttributeBottom
                                                                        multiplier:1.0
-                                                                         constant:0.0];
+                                                                         constant:-8.0];
     
     NSLayoutConstraint *mediaButtonLeft =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                       attribute:NSLayoutAttributeLeft
@@ -288,11 +292,11 @@
 }
 
 -(void)mediaButtonNormal{
-    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.mediaButton.alpha=0.8;
 }
 
 -(void)mediaButtonTapped{
-    self.mediaButton.backgroundColor=[UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
+    self.mediaButton.alpha=0.4;
     if ([self systemVersionLessThan8]){
         UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
         [mediaAlert show];
@@ -430,20 +434,20 @@
 
 
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
-    NSLog(@"dictionnary = %@", info);
+
     NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
-    NSLog(@"mediaType = %@", mediaType);
+
     if([mediaType isEqualToString:@"public.image"]){
-        UIImage *extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
-        NSString *photoInString = [self imageToNSString:extractedPhoto];
-        [self.contentToSend setObject:photoInString forKey:@"image"];
+        self.extractedPhoto = info[@"UIImagePickerControllerOriginalImage"];
+        
+        NSOperationQueue *imageSendQueue = [[NSOperationQueue alloc] init];
+        [imageSendQueue addOperationWithBlock:^{
+            NSString *photoInString = [self imageToNSString:self.extractedPhoto];
+            [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+                                               @"image":photoInString}];
+        }];
     }
-    else if([mediaType isEqualToString:@"public.movie"]){
-        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerReferenceURL"] class]);
-        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerMediaURL"] class]);
-        NSString* videoInString = [self videoToNSString:info[@"UIImagePickerControllerMediaURL"]];
-        [self.contentToSend setObject:videoInString forKey:@"video"];
-    }
+    
     [picker dismissViewControllerAnimated:YES completion:^{
     }];
 }
@@ -493,12 +497,12 @@
     //    self.cell.userMessageLabel.numberOfLines=0;
     //    self.cell.userInteractionEnabled=NO;
     //    self.cell.backgroundColor=[UIColor clearColor];
-    cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
-    cell.textLabel.numberOfLines=0;
-    cell.userInteractionEnabled=NO;
-    if (![self.messages count]==0) {
-        NSMutableDictionary *message=self.messages[indexPath.row];
-        NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    cell.textLabel.numberOfLines = 0;
+    cell.userInteractionEnabled = NO;
+    if (![self.messages count] == 0) {
+        NSMutableDictionary *message = self.messages[indexPath.row];
+        NSString *messageString = [NSString stringWithFormat:@"\n%@", message[@"message"]];
         if ([message[@"user"] isEqualToString:self.user.name]) {
             NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
             [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
@@ -528,6 +532,7 @@
             return cell;
         }
     }
+    
     return cell;
 }
 
