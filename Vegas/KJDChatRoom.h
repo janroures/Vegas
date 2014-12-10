@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 #import "KJDUser.h"
 #import <Firebase/Firebase.h>
+#import <QuickLook/QuickLook.h>
 
 @interface KJDChatRoom : NSObject
 

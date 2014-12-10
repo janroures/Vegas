@@ -3,6 +3,7 @@
 //  Vegas
 
 #import "KJDChatRoomViewController.h"
+#import "KJDImageDisplayViewController.h"
 
 @interface KJDChatRoomViewController ()
 
@@ -11,10 +12,10 @@
 @property (strong, nonatomic) UIButton *sendButton;
 @property (strong, nonatomic) UIButton *mediaButton;
 
+@property (strong,nonatomic) MPMoviePlayerController* playerController;
+
 @property (nonatomic)CGRect keyBoardFrame;
-
 @property(strong,nonatomic)NSMutableArray *messages;
-
 @property(strong, nonatomic) NSMutableDictionary* contentToSend;
 
 @end
@@ -25,21 +26,22 @@
     [super viewDidLoad];
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
-    UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
-    CGRect frame=CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-    backgroundImage.frame=frame;
-    [self.view addSubview:backgroundImage];
-    [self.view sendSubviewToBack:backgroundImage];
-    
+    self.user=self.chatRoom.user;
     [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
         if (completed) {
-            self.messages=self.chatRoom.messages;
+            
+            self.messages=self.chatRoom.messages; //****** esto hace q lleguen los msjes anteriores ? might have to add the contents
             self.user=self.chatRoom.user;
+            
             [[NSOperationQueue mainQueue]addOperationWithBlock:^{
+                
                 [self.tableView reloadData];
             }];
         }
     }];
+    
+    //    NSLog(@"self.messages: %@", self.messages);
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -51,6 +53,21 @@
                                                object:nil];
     
     self.contentToSend = [[NSMutableDictionary alloc] init];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(dismissKeyboard)];
+    tap.cancelsTouchesInView = NO;
+    [self.view addGestureRecognizer:tap];
+    
+}
+
+-(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    return NO;
+}
+
+-(void)dismissKeyboard {
+    [self.inputTextField resignFirstResponder];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -115,35 +132,40 @@
 
 -(void)setupNavigationBar{
     self.navigationItem.title=self.chatRoom.firebaseRoomURL;
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
-                                                  forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    //    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
+    //                                                  forBarMetrics:UIBarMetricsDefault];
+    //    self.navigationController.navigationBar.shadowImage = [UIImage new];
     self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.view.backgroundColor = [UIColor clearColor];
+    self.navigationController.view.backgroundColor = [UIColor whiteColor];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
 - (void)setupTableView
 {
+    
     self.tableView = [[UITableView alloc] init];
     [self.view addSubview:self.tableView];
+    
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
+    self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
     self.tableView.clipsToBounds=YES;
-    [self.tableView registerClass:[KJDChatRoomTableViewCell class] forCellReuseIdentifier:@"Cell"];
-    self.cell = [[KJDChatRoomTableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
-    [self.tableView addSubview:self.cell];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+//    self.cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
+//    [self.tableView addSubview:self.cell];
     self.tableView.scrollEnabled=YES;
+    
+    
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                     attribute:NSLayoutAttributeTop
                                                                     relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.view
-                                                                    attribute:NSLayoutAttributeTop
+                                                                       toItem:self.navigationItem.titleView
+                                                                    attribute:NSLayoutAttributeBottom
                                                                    multiplier:1.0
                                                                      constant:0.0];
     
@@ -163,7 +185,16 @@
                                                                      multiplier:1.0
                                                                        constant:0.0];
     
-    [self.view addConstraints:@[tableViewTop, tableViewBottom, tableViewWidth]];
+    NSLayoutConstraint *tableViewLeft = [NSLayoutConstraint constraintWithItem:self.tableView
+                                                                     attribute:NSLayoutAttributeLeft
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.view
+                                                                     attribute:NSLayoutAttributeLeft
+                                                                    multiplier:1.0
+                                                                      constant:0.0];
+    
+    [self.view addConstraints:@[tableViewTop, tableViewBottom, tableViewWidth, tableViewLeft]];
+    
 }
 
 - (void)sendButtonTapped{
@@ -202,7 +233,7 @@
                                                                         toItem:self.tableView
                                                                      attribute:NSLayoutAttributeBottom
                                                                     multiplier:1.0
-                                                                      constant:0.0];
+                                                                      constant:4.0];
     
     NSLayoutConstraint *sendButtonBottom = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                         attribute:NSLayoutAttributeBottom
@@ -218,7 +249,7 @@
                                                                          toItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeRight
                                                                      multiplier:1.0
-                                                                       constant:10.0];
+                                                                       constant:4.0];
     
     NSLayoutConstraint *sendButtonRight = [NSLayoutConstraint constraintWithItem:self.sendButton
                                                                        attribute:NSLayoutAttributeRight
@@ -226,7 +257,7 @@
                                                                           toItem:self.tableView
                                                                        attribute:NSLayoutAttributeRight
                                                                       multiplier:1.0
-                                                                        constant:-10.0];
+                                                                        constant:-4.0];
     
     [self.view addConstraints:@[sendButtonTop, sendButtonBottom, sendButtonLeft, sendButtonRight]];
 }
@@ -234,11 +265,13 @@
 -(void)setupMediaButton{
     self.mediaButton = [[UIButton alloc] init];
     [self.view addSubview:self.mediaButton];
-    self.mediaButton.backgroundColor = [UIColor redColor];
-    [self.mediaButton setAttributedTitle :[[NSAttributedString alloc] initWithString:@"pic"
+    self.mediaButton.backgroundColor = [UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    [self.mediaButton setAttributedTitle :[[NSAttributedString alloc] initWithString:@"M"
                                                                           attributes:nil]
-                                                                            forState:UIControlStateNormal];
+                                 forState:UIControlStateNormal];
     [self.mediaButton addTarget:self action:@selector(mediaButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    self.mediaButton.titleLabel.textColor = [UIColor whiteColor];
+    self.mediaButton.layer.cornerRadius=10.0f;
     self.mediaButton.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *mediaButtonTop = [NSLayoutConstraint constraintWithItem:self.mediaButton
@@ -263,7 +296,7 @@
                                                                          toItem:self.view
                                                                       attribute:NSLayoutAttributeLeft
                                                                      multiplier:1
-                                                                       constant:0];
+                                                                       constant:4];
     
     NSLayoutConstraint *mediaButtonRight =[NSLayoutConstraint constraintWithItem:self.mediaButton
                                                                        attribute:NSLayoutAttributeRight
@@ -271,7 +304,7 @@
                                                                           toItem:self.inputTextField
                                                                        attribute:NSLayoutAttributeLeft
                                                                       multiplier:1
-                                                                        constant:0];
+                                                                        constant:-4];
     
     [self.view addConstraints:@[mediaButtonTop, mediaButtonBottom, mediaButtonLeft, mediaButtonRight]];
 }
@@ -297,7 +330,7 @@
                                                                        toItem:self.tableView
                                                                     attribute:NSLayoutAttributeBottom
                                                                    multiplier:1.0
-                                                                     constant:0.0];
+                                                                     constant:4.0];
     
     NSLayoutConstraint *textFieldBottom = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                        attribute:NSLayoutAttributeBottom
@@ -313,7 +346,7 @@
                                                                         toItem:self.tableView
                                                                      attribute:NSLayoutAttributeLeft
                                                                     multiplier:1.0
-                                                                      constant:10.0];
+                                                                      constant:40.0];
     
     NSLayoutConstraint *textFieldRight = [NSLayoutConstraint constraintWithItem:self.inputTextField
                                                                       attribute:NSLayoutAttributeRight
@@ -321,7 +354,7 @@
                                                                          toItem:self.tableView
                                                                       attribute:NSLayoutAttributeRight
                                                                      multiplier:1.0
-                                                                       constant:-100.0];
+                                                                       constant:-80.0];
     
     [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
 }
@@ -329,6 +362,8 @@
 -(void)summonMap
 {
     KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
+    mapKitView.user = self.user;
+    mapKitView.chatRoom = self.chatRoom;
     
     [self presentViewController:mapKitView animated:YES completion:^{
         
@@ -336,12 +371,12 @@
 }
 
 -(NSString *)imageToNSString:(UIImage *)image{
-    NSData *imageData = UIImagePNGRepresentation(image);
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.1); //UIImagePNGRepresentation(image);
     return [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
 -(NSString*)videoToNSString:(NSURL*)video{
-    NSData* videoData =[NSData dataWithContentsOfURL:video];
+    NSData* videoData =[NSData dataWithContentsOfURL:video options:NSDataReadingMappedAlways error:nil];
     return [videoData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
@@ -350,17 +385,27 @@
     return [UIImage imageWithData:data];
 }
 
--(void)stringToVideo:(NSString*)string{
-//may not work
+-(MPMoviePlayerController*)stringToVideo:(NSString*)string{
+    
+    NSData* videoData = [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:string];
+    NSString *tempPath = [documentsDirectory stringByAppendingFormat:@"/vid1.mp4"];
     
-    NSURL *fileURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
+    BOOL success = [videoData writeToFile:tempPath atomically:NO];
+    NSLog(@"write to file success: %d", success);
     
-    //theoretically would play video.
-    MPMoviePlayerController* videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL: fileURL];
+    NSURL* pathURL = [[NSURL alloc] initFileURLWithPath:tempPath];
     
+    MPMoviePlayerController* player = [[MPMoviePlayerController alloc]initWithContentURL:pathURL];
+    
+    //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(btnDone_Press) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
+    
+    player.shouldAutoplay = NO;
+    
+    return player;
     
     //alternative - more to reproduce a video ; would need to know where a video is stored when saved.
     
@@ -385,28 +430,38 @@
     return deviceVersion < 8.0f;
 }
 
+-(void) sendMapImage:(UIImage*)map
+{
+    NSString* photoInString = [self imageToNSString:map];
+    
+    [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+                                       @"image":photoInString}];
+}
 
 -(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    NSLog(@"dictionnary = %@", info);
+    
     NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
-    NSLog(@"mediaType = %@", mediaType);
+    
     
     if([mediaType isEqualToString:@"public.image"])
     {
         UIImage* extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
         NSString* photoInString = [self imageToNSString:extractedPhoto];
-        [self.contentToSend setObject:photoInString forKey:@"image"];
+        [self.contentToSend setObject:photoInString forKey:@"image"]; //innecesario
+        
+        [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+                                           @"image":photoInString}];
+        
     }
     else if([mediaType isEqualToString:@"public.movie"])
     {
-        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerReferenceURL"] class]);
-        NSLog(@" movie extract type: %@", [info[@"UIImagePickerControllerMediaURL"] class]);
         
+        NSURL* videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+        NSString* videoInString = [self videoToNSString:videoURL];
         
-        
-        NSString* videoInString = [self videoToNSString:info[@"UIImagePickerControllerMediaURL"]];
-        [self.contentToSend setObject:videoInString forKey:@"video"];
+        [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+                                           @"video":videoInString}];
     }
     
     [picker dismissViewControllerAnimated:YES completion:^{
@@ -418,7 +473,7 @@
 {
     if ([self systemVersionLessThan8])
     {
-        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
+        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", nil];
         
         [mediaAlert show];
     }
@@ -492,52 +547,218 @@
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 57;
+    
+    NSMutableDictionary *content=self.messages[indexPath.row];
+    if (content[@"video"] || content[@"image"] || content[@"map"])
+    {
+        return 200;
+    }
+    else
+    {
+        return 70;
+    }
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-//    self.cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-//    self.cell.userMessageLabel.lineBreakMode=NSLineBreakByWordWrapping;
-//    self.cell.userMessageLabel.numberOfLines=0;
-//    self.cell.userInteractionEnabled=NO;
-//    self.cell.backgroundColor=[UIColor clearColor];
-    cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
-    cell.textLabel.numberOfLines=0;
+    
+    
+    //    self.cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    //    self.cell.userMessageLabel.lineBreakMode=NSLineBreakByWordWrapping;
+    //    self.cell.userMessageLabel.numberOfLines=0;
+    //    self.cell.userInteractionEnabled=NO;
+    //    self.cell.backgroundColor=[UIColor clearColor];
+    
     cell.userInteractionEnabled=NO;
-    if (![self.messages count]==0) {
-        NSMutableDictionary *message=self.messages[indexPath.row];
-        NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
-        if ([message[@"user"] isEqualToString:self.user.name]) {
-            NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
-            [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
-            NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
-            [muAtrStr appendAttributedString:atrStr];
-            cell.textLabel.attributedText=muAtrStr;
+    
+    //
+    NSDictionary *content=self.messages[indexPath.row];
+    
+        
+        if (content[@"video"])
+        {
+            cell.userInteractionEnabled=YES;
+            MPMoviePlayerController* player = [self stringToVideo:content[@"video"]];
+            
+            self.playerController = player;
+            
+            UIImage *thumbnail = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionNearestKeyFrame];
+            
+            
+            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
+            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
+            
+            
+            if ([content[@"user"] isEqualToString:self.user.name])
+            {
+                [player.view setFrame:CGRectMake(cell.contentView.frame.size.width/2 -4 , cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
+            }
+            else
+            {
+                [player.view setFrame:CGRectMake(cell.contentView.frame.origin.x + 4, cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
+            }
+            
             cell.backgroundColor=[UIColor clearColor];
-            cell.textLabel.textAlignment=NSTextAlignmentRight;
-            cell.textLabel.textAlignment=NSTextAlignmentRight;
             
-//            self.cell.usernameLabel.text=self.user.name;
-//            self.cell.userMessageLabel.text=message[@"message"];
-//            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
-//            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
+            player.scalingMode = MPMovieScalingModeAspectFit;
+            [player setControlStyle:MPMovieControlStyleDefault];
+            player.repeatMode = MPMovieRepeatModeNone;
             
-            return cell;
-        }else{
-            NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
-            [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
-            NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
-            cell.backgroundColor=[UIColor clearColor];
-            [muAtrStr appendAttributedString:atrStr];
-            cell.textLabel.attributedText=muAtrStr;
+            if ([cell.contentView.subviews count] == 0)
+            {
+                [cell.contentView addSubview:player.view];
+            }
             
-//            self.cell.usernameLabel.text=self.user.name;
-//            self.cell.userMessageLabel.text=message[@"message"];
-            return cell;
+            
+            //
+            //            [[NSNotificationCenter defaultCenter] addObserver:self
+            //                                                     selector:@selector(moviePlayerDidFinish:)
+            //                                                         name:MPMoviePlayerPlaybackDidFinishNotification
+            //                                                       object:self.playerController];
+            
+            
+            
+            [player play];
         }
-    }
+        else if (content[@"map"])
+        {
+            cell.userInteractionEnabled=YES;
+            NSString* imageInCode = content[@"map"];
+            UIImage* imageToDisplay = [self stringToUIImage:imageInCode];
+            
+            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
+            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
+            
+            
+            
+            if ([content[@"user"] isEqualToString:self.user.name])
+            {
+                cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
+                
+                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width/2 -4 , cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
+                imageDisplay.image = imageToDisplay;
+                
+                if ([cell.contentView.subviews count] == 0)
+                {
+                    [cell.contentView addSubview:imageDisplay];
+                }
+            }
+            else
+            {
+                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.origin.x + 4, cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height-4)];
+                imageDisplay.image = imageToDisplay;
+                
+                if ([cell.contentView.subviews count] == 0)
+                {
+                    [cell.contentView addSubview:imageDisplay];
+                }
+            }
+            
+            cell.backgroundColor=[UIColor clearColor];
+        }
+        else if (content[@"image"])
+        {
+            
+            NSString* imageInCode = content[@"image"];
+            UIImage* imageToDisplay = [self stringToUIImage:imageInCode];
+            
+            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
+            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
+            
+            if ([content[@"user"] isEqualToString:self.user.name])
+            {
+                
+                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width/2 -4 , cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
+                imageDisplay.image = imageToDisplay;
+                
+                if ([cell.contentView.subviews count] == 0)
+                {
+                    [cell.contentView addSubview:imageDisplay];
+                }
+            }
+            else
+            {
+                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.origin.x + 4, cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height-4)];
+                imageDisplay.image = imageToDisplay;
+                
+                if ([cell.contentView.subviews count] == 0)
+                {
+                    [cell.contentView addSubview:imageDisplay];
+                }
+            }
+            
+            cell.backgroundColor=[UIColor clearColor];
+        }
+        else if (content[@"message"])
+        {
+            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 70);
+            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
+            
+            NSString *messageTyped=[NSString stringWithFormat:@"\n%@", content[@"message"]];
+            cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
+            cell.textLabel.numberOfLines=0;
+            NSMutableAttributedString *attributedUserName = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+            [attributedUserName addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-BoldItalic" size:21] range:NSMakeRange(0, [attributedUserName length])];
+            
+            //
+            NSAttributedString *attributedMessage = [[NSAttributedString alloc]initWithString:messageTyped attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:24]}];
+            [attributedUserName appendAttributedString:attributedMessage];
+            cell.textLabel.attributedText=attributedUserName;
+            cell.backgroundColor=[UIColor clearColor];
+            
+            if ([content[@"user"] isEqualToString:self.user.name])
+            {
+                cell.textLabel.textAlignment=NSTextAlignmentRight;
+                cell.textLabel.textAlignment=NSTextAlignmentRight;
+                
+                //            self.cell.usernameLabel.text=self.user.name;
+                //            self.cell.userMessageLabel.text=message[@"message"];
+                //            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
+                //            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
+                
+            }
+        }
     return cell;
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    NSDictionary *content=self.messages[indexPath.row];
+    
+    if (content[@"map"])
+    {
+        UITableViewCell* mapCell = [self.tableView cellForRowAtIndexPath:indexPath];
+        
+        
+        KJDImageDisplayViewController* imageDisplayVC = [[KJDImageDisplayViewController alloc]init];
+        
+        imageDisplayVC.map = mapCell.contentView.subviews[0];
+        
+        [imageDisplayVC setModalPresentationStyle:UIModalPresentationFullScreen];
+        
+        [self presentViewController:imageDisplayVC animated:YES completion:^{
+            
+        }];
+    }
+}
+
+
+//- (void)moviePlayerDidFinish:(NSNotification *)note
+//{
+//    if (note.object == self.playerController)
+//    {
+//        NSInteger reason = [[note.userInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] integerValue];
+//        if (reason == MPMovieFinishReasonPlaybackEnded)
+//        {
+//            NSLog(@"sfsdff");
+//            [self.playerController prepareToPlay];
+//            
+//        }
+//    }
+//}
 
 @end

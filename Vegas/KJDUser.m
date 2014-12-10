@@ -9,8 +9,8 @@
 NSString *const lettersAndNumbersString = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 -(NSString *)createRandomUsername{
-    NSMutableString *randomString = [NSMutableString stringWithCapacity:15];
-    for (NSUInteger i = 0; i < 15; i++) {
+    NSMutableString *randomString = [NSMutableString stringWithCapacity:5];
+    for (NSUInteger i = 0; i < 5; i++) {
         u_int32_t randomNumber = arc4random() % [lettersAndNumbersString length];
         unichar randomCharacter = [lettersAndNumbersString characterAtIndex:randomNumber];
         [randomString appendFormat:@"%C", randomCharacter];

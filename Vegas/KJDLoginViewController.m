@@ -29,7 +29,11 @@
     [self.view sendSubviewToBack:backgroundImage];
     self.navigationController.navigationBarHidden = YES;
     [self setupViewsAndConstraints];
-    self.user =[[KJDUser alloc]initWithRandomName];
+    
+    if ( ! self.user)
+    {
+        self.user =[[KJDUser alloc]initWithRandomName];
+    }
 }
 //
 //-(void)viewWillAppear:(BOOL)animated{
@@ -44,9 +48,10 @@
     }else{
         self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
         self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
-        self.chatRoom.user=self.user;
+//        self.chatRoom.user=self.user; // no era inecesario?
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
         destinationViewController.chatRoom=self.chatRoom;
+//        destinationViewController.user=self.user;
         [self.navigationController pushViewController:destinationViewController animated:YES];
     }
     return YES;
@@ -207,10 +212,12 @@
     }else{
         self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
         self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
-        self.chatRoom.user=self.user;
+//        self.chatRoom.user=self.user;
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
         destinationViewController.chatRoom=self.chatRoom;
         [self.navigationController pushViewController:destinationViewController animated:YES];
+        
+        
     }
 }
 
