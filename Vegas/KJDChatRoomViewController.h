@@ -5,8 +5,10 @@
 #import <UIKit/UIKit.h>
 #import "KJDUser.h"
 #import "KJDChatRoom.h"
-#import "KJDChatRoomTableViewCell.h"
-#import "KJDChatRoomImageCell.h"
+#import "KJDChatRoomTableViewCellLeft.h"
+#import "KJDChatRoomTableViewCellRight.h"
+#import "KJDChatRoomImageCellLeft.h"
+#import "KJDChatRoomImageCellRight.h"
 #import <QuartzCore/QuartzCore.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <MediaPlayer/MediaPlayer.h>
@@ -21,7 +23,7 @@
 @property(strong,nonatomic)NSString *firebaseRoomURL;
 @property(strong,nonatomic)NSString *firebaseURL;
 @property(strong,nonatomic)KJDChatRoom *chatRoom;
-@property(strong,nonatomic)KJDChatRoomTableViewCell *cell;
+@property(strong,nonatomic)KJDChatRoomTableViewCellLeft *cell;
 
 @end
 

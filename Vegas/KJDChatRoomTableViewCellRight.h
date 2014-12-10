@@ -1,15 +1,14 @@
 //
-//  KJDChatRoomTableViewCell.h
+//  KJDChatRoomTableViewCellRight.h
 //  Vegas
 //
-//  Created by Jan Roures Mintenig on 23/11/14.
+//  Created by Jan Roures Mintenig on 10/12/14.
 //  Copyright (c) 2014 Jan Roures Mintenig. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface KJDChatRoomTableViewCell : UITableViewCell<UITextViewDelegate>
-
+@interface KJDChatRoomTableViewCellRight : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *usernameLabel;
 @property (weak, nonatomic) IBOutlet UITextView *userMessageTextView;
 

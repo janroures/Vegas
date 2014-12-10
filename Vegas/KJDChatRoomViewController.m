@@ -195,8 +195,8 @@
 -(void)setupNavigationBar{
     self.navigationItem.title=self.chatRoom.firebaseRoomURL;
     self.navigationController.navigationBar.tintColor=[UIColor blackColor];
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settingsIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleUsernameView)];
-    [self.navigationItem setRightBarButtonItem:rightItem];
+//    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settingsIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleUsernameView)];
+//    [self.navigationItem setRightBarButtonItem:rightItem];
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
                                                   forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [UIImage new];
@@ -381,8 +381,10 @@
     self.tableView.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
     self.tableView.clipsToBounds=YES;
-    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomTableViewCell" bundle:nil] forCellReuseIdentifier:@"normalCell"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomImageCell" bundle:nil] forCellReuseIdentifier:@"imageCell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomTableViewCellLeft" bundle:nil] forCellReuseIdentifier:@"normalCellLeft"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomTableViewCellRight" bundle:nil] forCellReuseIdentifier:@"normalCellRight"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomImageCellLeft" bundle:nil] forCellReuseIdentifier:@"imageCellLeft"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomImageCellRight" bundle:nil] forCellReuseIdentifier:@"imageCellRight"];
     self.tableView.scrollEnabled=YES;
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -396,7 +398,7 @@
                                                                        toItem:self.view
                                                                     attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:0.0];
+                                                                     constant:50.0];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                        attribute:NSLayoutAttributeBottom
@@ -714,75 +716,100 @@
     return size.height;
 }
 
-//-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-//    if (![self.messages count]==0) {
-//        NSMutableDictionary *message=self.messages[indexPath.row];
-//        if ([message objectForKey:@"message"]!=nil) {
-//            return 130;
-//        }else{
-//            return 70;
-//        }
-//    }
-//    return 0;
-//}
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (![self.messages count]==0) {
+        NSMutableDictionary *message=self.messages[indexPath.row];
+        if ([message objectForKey:@"message"]!=nil) {
+            NSDictionary *message=self.messages[indexPath.row];
+            NSString * yourText = message[@"message"]; // or however you are getting the text
+            return 51 + [self heightForText:yourText];
+        }else{
+            return 180;
+        }
+    }
+    return 0;
+    
+}
+
+-(CGFloat)heightForText:(NSString *)text
+{
+    NSInteger MAX_HEIGHT = 2000;
+    UITextView * textView = [[UITextView alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, MAX_HEIGHT)];
+    textView.text = text;
+    textView.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14];
+    [textView sizeToFit];
+    return textView.frame.size.height;
+}
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    CGFloat fixedWidth = textView.frame.size.width;
+    CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
+    CGRect newFrame = textView.frame;
+    newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
+    textView.frame = newFrame;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (![self.messages count]==0) {
         NSMutableDictionary *message=self.messages[indexPath.row];
         //check if the message contains a string message, if not the message contains an image (as string)
         if ([message objectForKey:@"message"]!=nil) {
-            KJDChatRoomTableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"normalCell" forIndexPath:indexPath];
-            cell.userInteractionEnabled=NO;
             NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
             //if the sender is the user, put username and image to the right, if not to the left
             if ([message[@"user"] isEqualToString:self.user.name]) {
+                KJDChatRoomTableViewCellRight *rightCell=[tableView dequeueReusableCellWithIdentifier:@"normalCellRight"];
                 NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
                 [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
                 
-                cell.usernameLabel.attributedText=muAtrStr;
-                cell.backgroundColor=[UIColor clearColor];
-                cell.userMessageTextView.text=messageString;
-                cell.userMessageTextView.backgroundColor=[UIColor clearColor];
+                rightCell.usernameLabel.attributedText = muAtrStr;
+                rightCell.usernameLabel.textAlignment = NSTextAlignmentRight;
+                rightCell.backgroundColor=[UIColor clearColor];
+                rightCell.userMessageTextView.text=messageString;
+                rightCell.userMessageTextView.textAlignment=NSTextAlignmentRight;
+                rightCell.userMessageTextView.backgroundColor=[UIColor clearColor];
+                [rightCell.userMessageTextView sizeToFit];
+                [rightCell.userMessageTextView layoutIfNeeded];
                 
-                return cell;
+                return rightCell;
             }else{
+                KJDChatRoomTableViewCellLeft *leftCell=[tableView dequeueReusableCellWithIdentifier:@"normalCellLeft"];
                 NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:message[@"user"]];
                 [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
-                cell.backgroundColor=[UIColor clearColor];
-                cell.usernameLabel.attributedText=muAtrStr;
-                cell.userMessageTextView.text=messageString;
-                cell.userMessageTextView.backgroundColor=[UIColor clearColor];
+                leftCell.backgroundColor=[UIColor clearColor];
+                leftCell.usernameLabel.attributedText=muAtrStr;
+                leftCell.userMessageTextView.text=messageString;
+                leftCell.userMessageTextView.backgroundColor=[UIColor clearColor];
+                [leftCell.userMessageTextView sizeToFit];
+                [leftCell.userMessageTextView layoutIfNeeded];
                 
-                return cell;
+                return leftCell;
             }
         }else{
-            KJDChatRoomImageCell *imageCell=[tableView dequeueReusableCellWithIdentifier:@"imageCell"];
             if ([message objectForKey:@"image"]!=nil) {
                 NSString *imageString=message[@"image"];
                 UIImage *image=[self stringToUIImage:imageString];
                 
                 if ([message[@"user"] isEqualToString:self.user.name]) {
+                    KJDChatRoomImageCellRight *rightCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellRight"];
                     NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:message[@"user"]];
                     [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
                     
-                    imageCell.rightLabel.attributedText=muAtrStr;
-                    imageCell.rightLabel.textAlignment=NSTextAlignmentRight;
-                    imageCell.backgroundColor=[UIColor clearColor];
-                    imageCell.rightImageView.image=image;
+                    rightCell.usernameLabel.attributedText=muAtrStr;
+                    rightCell.backgroundColor=[UIColor clearColor];
+                    rightCell.mediaImageView.image=image;
                     
-                    
-                    return imageCell;
+                    return rightCell;
                 }else{
+                    KJDChatRoomImageCellRight *leftCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellLeft"];
                     NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:message[@"user"]];
                     [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
                     
-                    imageCell.leftLabel.attributedText=muAtrStr;
-                    imageCell.leftLabel.textAlignment=NSTextAlignmentLeft;
-                    imageCell.backgroundColor=[UIColor clearColor];
-                    imageCell.leftImageView.image=image;
+                    leftCell.usernameLabel.attributedText=muAtrStr;
+                    leftCell.backgroundColor=[UIColor clearColor];
+                    leftCell.mediaImageView.image=image;                    
                     
-                    
-                    return imageCell;
+                    return leftCell;
                 }
             }
         }

@@ -1,14 +1,14 @@
 //
-//  KJDChatRoomImageCell.m
+//  KJDChatRoomTableViewCellRight.m
 //  Vegas
 //
-//  Created by Jan Roures Mintenig on 9/12/14.
+//  Created by Jan Roures Mintenig on 10/12/14.
 //  Copyright (c) 2014 Jan Roures Mintenig. All rights reserved.
 //
 
-#import "KJDChatRoomImageCell.h"
+#import "KJDChatRoomTableViewCellRight.h"
 
-@implementation KJDChatRoomImageCell
+@implementation KJDChatRoomTableViewCellRight
 
 - (void)awakeFromNib {
     // Initialization code
