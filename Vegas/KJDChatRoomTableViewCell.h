@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface KJDChatRoomTableViewCell : UITableViewCell
+@interface KJDChatRoomTableViewCell : UITableViewCell<UITextViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *usernameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *userMessageLabel;
+@property (weak, nonatomic) IBOutlet UITextView *userMessageTextView;
 
 @end

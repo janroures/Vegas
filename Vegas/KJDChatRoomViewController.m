@@ -23,7 +23,6 @@
 
 @property (nonatomic)CGRect keyBoardFrame;
 
-
 @property (strong,nonatomic) NSMutableArray *messages;
 
 @property (strong, nonatomic) NSMutableDictionary *contentToSend;
@@ -380,17 +379,12 @@
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
     self.tableView.backgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
-    
-    [self.view addSubview:self.tableView];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
     self.tableView.clipsToBounds=YES;
-    [self.tableView registerClass:[KJDChatRoomTableViewCell class] forCellReuseIdentifier:@"normalCell"];
-    [self.tableView registerClass:[KJDChatRoomImageCell class] forCellReuseIdentifier:@"imageCell"];
-    KJDChatRoomTableViewCell *cell = [[KJDChatRoomTableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
-    KJDChatRoomImageCell *imageCell = [[KJDChatRoomImageCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 130)];
-    [self.tableView addSubview:cell];
-    [self.tableView addSubview:imageCell];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomTableViewCell" bundle:nil] forCellReuseIdentifier:@"normalCell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomImageCell" bundle:nil] forCellReuseIdentifier:@"imageCell"];
     self.tableView.scrollEnabled=YES;
+    
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     [self.tableView addGestureRecognizer:gestureRecognizer];
@@ -543,32 +537,7 @@
 }
 
 -(void)mediaButtonTapped{
-//    self.mediaButton.alpha=0.4;
-//    if ([self systemVersionLessThan8]){
-//        UIAlertView* mediaAlert = [[UIAlertView alloc] initWithTitle:@"Share something!" message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Take a Picture or Video", @"Choose an existing Photo or Video", @"Share location", @"Send voice note", nil];
-//        [mediaAlert show];
-//    }else{
-//        UIAlertController* mediaAlert = [UIAlertController alertControllerWithTitle:@"Share something!" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
-//        UIAlertAction* takePhoto = [UIAlertAction actionWithTitle:@"Take a Picture or Video"
-//                                                            style:UIAlertActionStyleDefault
-//                                                          handler:^(UIAlertAction *action){[self obtainImageFrom:UIImagePickerControllerSourceTypeCamera];
-//                                                          }];
-//        [mediaAlert addAction:takePhoto];
-//        UIAlertAction* chooseExistingPhoto = [UIAlertAction actionWithTitle:@"Choose an existing Photo or Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-//            [self obtainImageFrom:UIImagePickerControllerSourceTypePhotoLibrary];
-//        }];
-//        [mediaAlert addAction:chooseExistingPhoto];
-//        UIAlertAction* cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-//        }];
-//        [mediaAlert addAction:cancel];
-//        UIAlertAction* showLocation = [UIAlertAction actionWithTitle:@"Share Location" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-//            [self summonMap];
-//        }];
-//        [mediaAlert addAction:showLocation];
-//        [self presentViewController:mediaAlert animated:YES completion:^{
-//        }];
-//    }
-    
+    self.mediaButton.alpha=0.4;
     UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
     imagePicker.delegate = self;
     
@@ -628,9 +597,9 @@
 //-(void)summonMap
 //{
 //    KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
-//    
+//
 //    [self presentViewController:mapKitView animated:YES completion:^{
-//        
+//
 //    }];
 //}
 
@@ -654,15 +623,15 @@
 //    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 //    NSString *documentsDirectory = [paths objectAtIndex:0];
 //    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:string];
-//    
+//
 //    NSURL *fileURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
-//    
+//
 //    //theoretically would play video.
 //    MPMoviePlayerController* videoPlayer = [[MPMoviePlayerController alloc] initWithContentURL: fileURL];
-//    
-//    
+//
+//
 //    //alternative - more to reproduce a video ; would need to know where a video is stored when saved.
-//    
+//
 //    /*
 //     NSString *moviePath = [[info objectForKey:
 //     UIImagePickerControllerMediaURL] path];
@@ -670,10 +639,10 @@
 //     {
 //     UISaveVideoAtPathToSavedPhotosAlbum (moviePath,self, @selector(video:didFinishSavingWithError:contextInfo:), nil);
 //     }
-//     
+//
 //     //for obtaining filePath, consider also:
 //     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"vid" ofType:@"mp4"];
-//     
+//
 //     */
 //}
 
@@ -685,7 +654,7 @@
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
-
+    
     NSLog(@"Finsihed picking");
     NSString* mediaType = [info valueForKey:UIImagePickerControllerMediaType];
     
@@ -719,18 +688,18 @@
 //    imagePicker.sourceType = sourceType;
 //    NSArray *mediaTypesAllowed = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
 //    imagePicker.mediaTypes = mediaTypesAllowed;
-//    
+//
 //    //seems to be unnecessary
 //    //    if (sourceType == UIImagePickerControllerSourceTypeCamera)
 //    //    {
 //    //        imagePicker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString*)kUTTypeMovie, kUTTypeImage, nil];
 //    //    }
-//    
+//
 //    imagePicker.delegate = self;
 //    [self presentViewController:imagePicker
 //                       animated:YES
 //                     completion:^{
-//                         
+//
 //                     }];
 //}
 
@@ -738,17 +707,24 @@
     return [self.messages count];
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (![self.messages count]==0) {
-        NSMutableDictionary *message=self.messages[indexPath.row];
-        if ([message objectForKey:@"message"]!=nil) {
-            return 57;
-        }else{
-            return 111;
-        }
-    }
-    return 0;
+- (CGFloat)textViewHeightForAttributedText: (NSAttributedString*)text andWidth: (CGFloat)width {
+    UITextView *calculationView = [[UITextView alloc] init];
+    [calculationView setAttributedText:text];
+    CGSize size = [calculationView sizeThatFits:CGSizeMake(width, FLT_MAX)];
+    return size.height;
 }
+
+//-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+//    if (![self.messages count]==0) {
+//        NSMutableDictionary *message=self.messages[indexPath.row];
+//        if ([message objectForKey:@"message"]!=nil) {
+//            return 130;
+//        }else{
+//            return 70;
+//        }
+//    }
+//    return 0;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (![self.messages count]==0) {
@@ -756,29 +732,26 @@
         //check if the message contains a string message, if not the message contains an image (as string)
         if ([message objectForKey:@"message"]!=nil) {
             KJDChatRoomTableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"normalCell" forIndexPath:indexPath];
-            cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
-            cell.textLabel.numberOfLines=0;
             cell.userInteractionEnabled=NO;
             NSString *messageString=[NSString stringWithFormat:@"\n%@", message[@"message"]];
             //if the sender is the user, put username and image to the right, if not to the left
             if ([message[@"user"] isEqualToString:self.user.name]) {
                 NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
                 [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
-                NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
-                [muAtrStr appendAttributedString:atrStr];
-                cell.textLabel.attributedText=muAtrStr;
+                
+                cell.usernameLabel.attributedText=muAtrStr;
                 cell.backgroundColor=[UIColor clearColor];
-                cell.textLabel.textAlignment=NSTextAlignmentRight;
-                cell.textLabel.textAlignment=NSTextAlignmentRight;
+                cell.userMessageTextView.text=messageString;
+                cell.userMessageTextView.backgroundColor=[UIColor clearColor];
                 
                 return cell;
             }else{
-                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:message[@"user"]];
                 [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
-                NSAttributedString *atrStr = [[NSAttributedString alloc]initWithString:messageString attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:16]}];
                 cell.backgroundColor=[UIColor clearColor];
-                [muAtrStr appendAttributedString:atrStr];
-                cell.textLabel.attributedText=muAtrStr;
+                cell.usernameLabel.attributedText=muAtrStr;
+                cell.userMessageTextView.text=messageString;
+                cell.userMessageTextView.backgroundColor=[UIColor clearColor];
                 
                 return cell;
             }
@@ -789,7 +762,7 @@
                 UIImage *image=[self stringToUIImage:imageString];
                 
                 if ([message[@"user"] isEqualToString:self.user.name]) {
-                    NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                    NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:message[@"user"]];
                     [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
                     
                     imageCell.rightLabel.attributedText=muAtrStr;
@@ -800,7 +773,7 @@
                     
                     return imageCell;
                 }else{
-                    NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                    NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:message[@"user"]];
                     [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-UltraLight" size:14] range:NSMakeRange(0, [muAtrStr length])];
                     
                     imageCell.leftLabel.attributedText=muAtrStr;
