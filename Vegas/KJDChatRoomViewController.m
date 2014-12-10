@@ -390,7 +390,7 @@
                                                                        toItem:self.view
                                                                     attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:50.0];
+                                                                     constant:0.0];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                        attribute:NSLayoutAttributeBottom
@@ -598,7 +598,7 @@
 //}
 
 -(NSString *)imageToNSString:(UIImage *)image{
-    NSData *imageData = UIImagePNGRepresentation(image);
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.1); //UIImagePNGRepresentation(image);
     return [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
@@ -713,14 +713,13 @@
         NSMutableDictionary *message=self.messages[indexPath.row];
         if ([message objectForKey:@"message"]!=nil) {
             NSDictionary *message=self.messages[indexPath.row];
-            NSString * yourText = message[@"message"]; // or however you are getting the text
+            NSString *yourText = message[@"message"]; // or however you are getting the text
             return 51 + [self heightForText:yourText];
         }else{
             return 180;
         }
     }
     return 0;
-    
 }
 
 -(CGFloat)heightForText:(NSString *)text
