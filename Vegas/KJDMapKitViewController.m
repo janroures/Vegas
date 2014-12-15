@@ -12,7 +12,8 @@
 @interface KJDMapKitViewController ()
 
 @property(strong, nonatomic) MKMapView* mapView;
-//@property(strong, nonatomic) MKMapView* mapView;
+@property(strong, nonatomic) UIButton* cancelMap;
+@property(strong, nonatomic) UIButton* submitMap;
 
 @property (strong,nonatomic) CLLocation *currentCoordinates;
 
@@ -24,10 +25,13 @@
 {
     [super viewDidLoad];
     
+    
+    
     self.mapView.showsUserLocation = YES;
     
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
+    [self.locationManager startUpdatingLocation];
     [self.locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
     [self.locationManager setDesiredAccuracy:kCLDistanceFilterNone];
     
@@ -37,16 +41,13 @@
     }
 
     
-    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height*0.8f)];
     
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
-
-    [self locationManager:self.locationManager didUpdateLocations:@[self.locationManager.location]];
     
     MKCoordinateRegion regionToDisplay = MKCoordinateRegionMakeWithDistance(self.currentCoordinates.coordinate, 10, 10);
     
     [self.mapView setRegion:regionToDisplay animated:YES];
-    
     [self.view addSubview:self.mapView];
 }
 
@@ -56,8 +57,7 @@
     [self.locationManager stopUpdatingLocation];
 }
 
--(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
-{
+-(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error{
     UIAlertView *errorAlert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"KJD -There was an error retrieving your location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
     [errorAlert show];
     NSLog(@"Error: %@",error.description);
@@ -65,13 +65,20 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+
     // Dispose of any resources that can be recreated.
 }
 
--(void)viewWillAppear:(BOOL)animated
-{
-    self.currentCoordinates = [[CLLocation alloc] initWithLatitude:38.8833 longitude:-77.0167];
-    [self.locationManager startUpdatingLocation];
+-(void)viewWillAppear:(BOOL)animated{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)cancelMapTapped{
+    [self dismissViewControllerAnimated:YES completion::nil];
+}
+
+-(void) submitMapTapped{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
