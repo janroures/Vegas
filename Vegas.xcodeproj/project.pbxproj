@@ -352,10 +352,11 @@
 				TargetAttributes = {
 					0BB036AE1A1FE0EE0021CCF4 = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = VGWMY5RTZB;
+						DevelopmentTeam = 2XFC85G99P;
 					};
 					0BB036C71A1FE0EE0021CCF4 = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = 2XFC85G99P;
 						TestTargetID = 0BB036AE1A1FE0EE0021CCF4;
 					};
 				};
