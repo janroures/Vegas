@@ -588,14 +588,14 @@
     [self.view addConstraints:@[textFieldTop, textFieldBottom, textFieldLeft, textFieldRight]];
 }
 
-//-(void)summonMap
-//{
-//    KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
-//
-//    [self presentViewController:mapKitView animated:YES completion:^{
-//
-//    }];
-//}
+-(void)summonMap
+{
+    KJDMapKitViewController* mapKitView = [[KJDMapKitViewController alloc] init];
+    
+    [self presentViewController:mapKitView animated:YES completion:^{
+        NSLog(@"hh");
+    }];
+}
 
 -(NSString *)imageToNSString:(UIImage *)image{
     NSData *imageData = UIImageJPEGRepresentation(image, 0.1); //UIImagePNGRepresentation(image);
