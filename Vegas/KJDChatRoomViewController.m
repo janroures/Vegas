@@ -390,7 +390,7 @@
                                                                        toItem:self.view
                                                                     attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:0.0];
+                                                                     constant:50.0];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                        attribute:NSLayoutAttributeBottom
