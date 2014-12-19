@@ -9,7 +9,6 @@
 #import <QuickLook/QuickLook.h>
 
 
-
 @interface KJDChatRoom : NSObject
 
 @property(strong,nonatomic)KJDUser *user;

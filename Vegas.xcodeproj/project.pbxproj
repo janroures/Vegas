@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B01E6931A366F4900577655 /* photography_camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B01E6921A366F4900577655 /* photography_camera.png */; };
+		0B01E6951A367DBD00577655 /* settingsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B01E6941A367DBD00577655 /* settingsIcon.png */; };
 		0B24301C1A2696AC007E60C1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B24301B1A2696AC007E60C1 /* MediaPlayer.framework */; };
 		0B24301F1A2696B7007E60C1 /* libMobileGestalt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B24301D1A2696B7007E60C1 /* libMobileGestalt.dylib */; };
 		0B2430201A2696B7007E60C1 /* libMobileGestaltExtensions.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B24301E1A2696B7007E60C1 /* libMobileGestaltExtensions.dylib */; };
@@ -24,6 +26,16 @@
 		0B42BD6F1A1FE80200FCEFE7 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */; };
 		0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */; };
+		0B40B64F1A38977E00C68439 /* KJDChatRoomTableViewCellRight.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B40B64E1A38977E00C68439 /* KJDChatRoomTableViewCellRight.xib */; };
+		0B40B6521A38978E00C68439 /* KJDChatRoomTableViewCellRight.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B40B6511A38978E00C68439 /* KJDChatRoomTableViewCellRight.m */; };
+		0B40B6541A38989F00C68439 /* KJDChatRoomImageCellRight.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B40B6531A38989F00C68439 /* KJDChatRoomImageCellRight.xib */; };
+		0B40B6571A3898B000C68439 /* KJDChatRoomImageCellRight.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B40B6561A3898AF00C68439 /* KJDChatRoomImageCellRight.m */; };
+		0B42BD6F1A1FE80200FCEFE7 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCellLeft.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCellLeft.m */; };
+		0B8DB7621A37881700F35E4B /* KJDChatRoomImageCellLeft.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B8DB7611A37881700F35E4B /* KJDChatRoomImageCellLeft.xib */; };
+		0B8DB7651A37883400F35E4B /* KJDChatRoomImageCellLeft.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B8DB7641A37883400F35E4B /* KJDChatRoomImageCellLeft.m */; };
+		0B8DB7671A37972C00F35E4B /* SplashScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B8DB7661A37972C00F35E4B /* SplashScreen.xib */; };
+		0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCellLeft.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCellLeft.xib */; };
 		0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */; };
 		0BAA8C641A24403800B7E5AF /* chatIDTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAA8C631A24403800B7E5AF /* chatIDTextField.m */; };
 		0BAA8C661A2441FB00B7E5AF /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BAA8C651A2441FB00B7E5AF /* background.png */; };
@@ -62,6 +74,9 @@
 		D4CC89BE1A40B7E500CCCC75 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4CC89BD1A40B7E500CCCC75 /* Images.xcassets */; };
 		D4CC89C11A40B7E500CCCC75 /* Vegas WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = D4CC89A91A40B7E500CCCC75 /* Vegas WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D4CC89CB1A40B9D300CCCC75 /* MainRowType.m in Sources */ = {isa = PBXBuildFile; fileRef = D4CC89CA1A40B9D300CCCC75 /* MainRowType.m */; };
+		B19C3A341A1FE748002868B1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B19C3A331A1FE748002868B1 /* main.m */; };
+		B19C3A371A1FE79E002868B1 /* KJDLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B19C3A361A1FE79E002868B1 /* KJDLoginViewController.m */; };
+		BD71407CCB2854C8BCF55FE3 /* libPods-Vegas.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E89D24A220E31E9A949BD9 /* libPods-Vegas.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +118,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B01E6921A366F4900577655 /* photography_camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = photography_camera.png; sourceTree = "<group>"; };
+		0B01E6941A367DBD00577655 /* settingsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settingsIcon.png; sourceTree = "<group>"; };
 		0B24301B1A2696AC007E60C1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		0B24301D1A2696B7007E60C1 /* libMobileGestalt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMobileGestalt.dylib; path = usr/lib/libMobileGestalt.dylib; sourceTree = SDKROOT; };
 		0B24301E1A2696B7007E60C1 /* libMobileGestaltExtensions.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMobileGestaltExtensions.dylib; path = usr/lib/libMobileGestaltExtensions.dylib; sourceTree = SDKROOT; };
@@ -121,6 +141,19 @@
 		0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomTableViewCell.h; sourceTree = "<group>"; };
 		0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomTableViewCell.m; sourceTree = "<group>"; };
 		0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomTableViewCell.xib; sourceTree = "<group>"; };
+		0B40B64E1A38977E00C68439 /* KJDChatRoomTableViewCellRight.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomTableViewCellRight.xib; sourceTree = "<group>"; };
+		0B40B6501A38978E00C68439 /* KJDChatRoomTableViewCellRight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomTableViewCellRight.h; sourceTree = "<group>"; };
+		0B40B6511A38978E00C68439 /* KJDChatRoomTableViewCellRight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomTableViewCellRight.m; sourceTree = "<group>"; };
+		0B40B6531A38989F00C68439 /* KJDChatRoomImageCellRight.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomImageCellRight.xib; sourceTree = "<group>"; };
+		0B40B6551A3898AF00C68439 /* KJDChatRoomImageCellRight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomImageCellRight.h; sourceTree = "<group>"; };
+		0B40B6561A3898AF00C68439 /* KJDChatRoomImageCellRight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomImageCellRight.m; sourceTree = "<group>"; };
+		0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCellLeft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomTableViewCellLeft.h; sourceTree = "<group>"; };
+		0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCellLeft.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomTableViewCellLeft.m; sourceTree = "<group>"; };
+		0B8DB7611A37881700F35E4B /* KJDChatRoomImageCellLeft.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomImageCellLeft.xib; sourceTree = "<group>"; };
+		0B8DB7631A37883400F35E4B /* KJDChatRoomImageCellLeft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDChatRoomImageCellLeft.h; sourceTree = "<group>"; };
+		0B8DB7641A37883400F35E4B /* KJDChatRoomImageCellLeft.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomImageCellLeft.m; sourceTree = "<group>"; };
+		0B8DB7661A37972C00F35E4B /* SplashScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SplashScreen.xib; sourceTree = "<group>"; };
+		0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCellLeft.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KJDChatRoomTableViewCellLeft.xib; sourceTree = "<group>"; };
 		0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magnifyingglass.png; sourceTree = "<group>"; };
 		0BAA8C621A24403800B7E5AF /* chatIDTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chatIDTextField.h; sourceTree = "<group>"; };
 		0BAA8C631A24403800B7E5AF /* chatIDTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = chatIDTextField.m; sourceTree = "<group>"; };
@@ -168,6 +201,7 @@
 		8A45F55A1A38B31500A69E17 /* KJDChatRoomImageCellRight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDChatRoomImageCellRight.m; sourceTree = "<group>"; };
 		8AF7FF591A3BAE7800A9B4E4 /* vegasAppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vegasAppIcon.png; sourceTree = "<group>"; };
 		8AF7FF5B1A3BB09800A9B4E4 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		8A304DC01A269FED0009D881 /* libPods-Vegas-Firebase.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Vegas-Firebase.a"; path = "Pods/build/Debug-iphoneos/libPods-Vegas-Firebase.a"; sourceTree = "<group>"; };
 		B19C3A331A1FE748002868B1 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B19C3A351A1FE79E002868B1 /* KJDLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJDLoginViewController.h; sourceTree = "<group>"; };
 		B19C3A361A1FE79E002868B1 /* KJDLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJDLoginViewController.m; sourceTree = "<group>"; };
@@ -232,6 +266,19 @@
 				0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCell.m */,
 				0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCell.xib */,
 				8A45F54E1A38B2F700A69E17 /* JanCells */,
+				0BA1E8031A23F9AB0091DC3C /* KJDChatRoomTableViewCellLeft.xib */,
+				0B642B741A21A5DA00773D5F /* KJDChatRoomTableViewCellLeft.h */,
+				0B642B751A21A5DA00773D5F /* KJDChatRoomTableViewCellLeft.m */,
+				0B40B64E1A38977E00C68439 /* KJDChatRoomTableViewCellRight.xib */,
+				0B40B6501A38978E00C68439 /* KJDChatRoomTableViewCellRight.h */,
+				0B40B6511A38978E00C68439 /* KJDChatRoomTableViewCellRight.m */,
+				0B8DB7611A37881700F35E4B /* KJDChatRoomImageCellLeft.xib */,
+				0B8DB7631A37883400F35E4B /* KJDChatRoomImageCellLeft.h */,
+				0B8DB7641A37883400F35E4B /* KJDChatRoomImageCellLeft.m */,
+				0B40B6531A38989F00C68439 /* KJDChatRoomImageCellRight.xib */,
+				0B40B6551A3898AF00C68439 /* KJDChatRoomImageCellRight.h */,
+				0B40B6561A3898AF00C68439 /* KJDChatRoomImageCellRight.m */,
+				0B8DB7661A37972C00F35E4B /* SplashScreen.xib */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -245,6 +292,10 @@
 				8AF7FF5B1A3BB09800A9B4E4 /* Default-568h@2x.png */,
 				0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */,
 				8A45F5321A38020900A69E17 /* myLaunchImage.png */,
+				0BAA8C5F1A243F1300B7E5AF /* magnifyingglass.png */,
+				0BAA8C651A2441FB00B7E5AF /* background.png */,
+				0B01E6921A366F4900577655 /* photography_camera.png */,
+				0B01E6941A367DBD00577655 /* settingsIcon.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -398,6 +449,7 @@
 			isa = PBXGroup;
 			children = (
 				8A45F5341A3829DF00A69E17 /* QuickLook.framework */,
+				8A304DC01A269FED0009D881 /* libPods-Vegas-Firebase.a */,
 				0B2430211A26971B007E60C1 /* AudioToolbox.framework */,
 				0B2430221A26971B007E60C1 /* CFNetwork.framework */,
 				0B2430231A26971B007E60C1 /* CoreGraphics.framework */,
@@ -552,6 +604,13 @@
 					D4CC89B31A40B7E500CCCC75 = {
 						CreatedOnToolsVersion = 6.2;
 					};
+						DevelopmentTeam = 2XFC85G99P;
+					};
+					0BB036C71A1FE0EE0021CCF4 = {
+						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = 2XFC85G99P;
+						TestTargetID = 0BB036AE1A1FE0EE0021CCF4;
+					};
 				};
 			};
 			buildConfigurationList = 0BB036AA1A1FE0EE0021CCF4 /* Build configuration list for PBXProject "Vegas" */;
@@ -594,6 +653,15 @@
 				0BAA8C661A2441FB00B7E5AF /* background.png in Resources */,
 				0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */,
 				8AF7FF5A1A3BAE7800A9B4E4 /* vegasAppIcon.png in Resources */,
+				0BA1E8041A23F9AB0091DC3C /* KJDChatRoomTableViewCellLeft.xib in Resources */,
+				0B01E6951A367DBD00577655 /* settingsIcon.png in Resources */,
+				0BAA8C661A2441FB00B7E5AF /* background.png in Resources */,
+				0B40B64F1A38977E00C68439 /* KJDChatRoomTableViewCellRight.xib in Resources */,
+				0BAA8C601A243F1300B7E5AF /* magnifyingglass.png in Resources */,
+				0B8DB7621A37881700F35E4B /* KJDChatRoomImageCellLeft.xib in Resources */,
+				0B40B6541A38989F00C68439 /* KJDChatRoomImageCellRight.xib in Resources */,
+				0B01E6931A366F4900577655 /* photography_camera.png in Resources */,
+				0B8DB7671A37972C00F35E4B /* SplashScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,6 +748,18 @@
 				0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCell.m in Sources */,
 				8A45F55C1A38B31500A69E17 /* KJDChatRoomTableViewCellLeft.m in Sources */,
 				0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */,
+				0B42BD6F1A1FE80200FCEFE7 /* (null) in Sources */,
+				0BFE380B1A1FE1C200EA4D28 /* KJDUser.m in Sources */,
+				0BFE38101A1FE1EB00EA4D28 /* AppDelegate.m in Sources */,
+				0B2430361A2698B2007E60C1 /* KJDMapKitViewController.m in Sources */,
+				0B40B6521A38978E00C68439 /* KJDChatRoomTableViewCellRight.m in Sources */,
+				0BFE38091A1FE1C200EA4D28 /* KJDChatRoom.m in Sources */,
+				B19C3A341A1FE748002868B1 /* main.m in Sources */,
+				0B40B6571A3898B000C68439 /* KJDChatRoomImageCellRight.m in Sources */,
+				B19C3A371A1FE79E002868B1 /* KJDLoginViewController.m in Sources */,
+				0B642B761A21A5DA00773D5F /* KJDChatRoomTableViewCellLeft.m in Sources */,
+				0BFE380A1A1FE1C200EA4D28 /* KJDChatRoomViewController.m in Sources */,
+				0B8DB7651A37883400F35E4B /* KJDChatRoomImageCellLeft.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -757,6 +837,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -793,6 +874,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -804,6 +886,8 @@
 			baseConfigurationReference = CB5DAB915AC2BF4B352376B8 /* Pods-Vegas.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Vegas",
@@ -812,6 +896,15 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -820,6 +913,8 @@
 			baseConfigurationReference = 5DCB63D569D4265F5E712AAA /* Pods-Vegas.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Vegas",
@@ -828,6 +923,15 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/build/Debug-iphoneos",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

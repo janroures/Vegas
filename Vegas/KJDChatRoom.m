@@ -23,7 +23,6 @@
 }
 
 -(void)fetchMessagesFromCloud:(FDataSnapshot *)snapshot withBlock:(void (^)(NSMutableArray *messages))completionBlock{
-   
     NSMutableArray *messagesArray=[[NSMutableArray alloc]init];
    if ([snapshot.value isKindOfClass:[NSArray class]]) {
       [messagesArray addObjectsFromArray:snapshot.value];

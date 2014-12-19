@@ -27,11 +27,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     self.mapView.showsUserLocation = YES;
     
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
+    [self.locationManager startUpdatingLocation];
     [self.locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
     [self.locationManager setDesiredAccuracy:kCLDistanceFilterNone];
     
@@ -302,5 +302,6 @@
     // Pass the selected object to the new view controller.
 }
 */
+
 
 @end

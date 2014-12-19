@@ -14,8 +14,8 @@
 @property (strong, nonatomic) UILabel *enterLabel;
 @property (strong, nonatomic) chatIDTextField *chatCodeField;
 @property (strong, nonatomic) UIButton *enterButton;
-@property (strong,nonatomic) KJDUser *user;
-@property (strong,nonatomic) KJDChatRoom *chatRoom;
+@property (strong, nonatomic) KJDUser *user;
+@property (strong, nonatomic) KJDChatRoom *chatRoom;
 
 @end
 
@@ -24,7 +24,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
-    backgroundImage.frame=self.view.frame;
+    backgroundImage.frame = self.view.frame;
     [self.view addSubview:backgroundImage];
     [self.view sendSubviewToBack:backgroundImage];
     self.navigationController.navigationBarHidden = YES;
@@ -48,10 +48,10 @@
     }else{
         self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
         self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
-//        self.chatRoom.user=self.user; // no era inecesario?
+        //        self.chatRoom.user=self.user; // no era inecesario?
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
         destinationViewController.chatRoom=self.chatRoom;
-//        destinationViewController.user=self.user;
+        //        destinationViewController.user=self.user;
         [self.navigationController pushViewController:destinationViewController animated:YES];
     }
     return YES;
@@ -159,7 +159,6 @@
 - (void)setupEnterButton
 {
     self.enterButton = [[UIButton alloc] init];
-    [self.view addSubview:self.enterButton];
     [self.enterButton setTitle:@"Enter Chat" forState:UIControlStateNormal];
     self.enterButton.layer.cornerRadius=10.0f;
     self.enterButton.layer.masksToBounds=YES;
@@ -167,6 +166,7 @@
     [self.enterButton addTarget:self action:@selector(enterButtonTappedForBackground) forControlEvents:UIControlEventTouchDown];
     [self.enterButton addTarget:self action:@selector(enterButtonReleased) forControlEvents:UIControlEventTouchUpInside];
     self.enterButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.enterButton];
     
     NSLayoutConstraint *enterButtonX = [NSLayoutConstraint constraintWithItem:self.enterButton
                                                                     attribute:NSLayoutAttributeCenterX
@@ -212,7 +212,7 @@
     }else{
         self.chatRoom=[[KJDChatRoom alloc]initWithUser:self.user];
         self.chatRoom.firebaseRoomURL=self.chatCodeField.text;
-//        self.chatRoom.user=self.user;
+        //        self.chatRoom.user=self.user;
         KJDChatRoomViewController *destinationViewController = [[KJDChatRoomViewController alloc] init];
         destinationViewController.chatRoom=self.chatRoom;
         [self.navigationController pushViewController:destinationViewController animated:YES];
