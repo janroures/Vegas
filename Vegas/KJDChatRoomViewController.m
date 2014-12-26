@@ -4,6 +4,12 @@
 
 #import "KJDChatRoomViewController.h"
 #import "KJDImageDisplayViewController.h"
+#import "KJDChatRoomTableViewCellRight.h"
+#import "KJDChatRoomTableViewCellLeft.h"
+#import "KJDChatRoomImageCellRight.h"
+#import "KJDChatRoomImageCellLeft.h"
+#import "AppDelegate.h"
+
 
 @interface KJDChatRoomViewController ()
 
@@ -11,36 +17,65 @@
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIButton *sendButton;
 @property (strong, nonatomic) UIButton *mediaButton;
+@property (strong, nonatomic) UILabel *subtitleView;
+@property (strong, nonatomic) UIBarButtonItem *settingsButton;
 
 @property (strong,nonatomic) MPMoviePlayerController* playerController;
 
 @property (nonatomic)CGRect keyBoardFrame;
 @property(strong,nonatomic)NSMutableArray *messages;
-@property(strong, nonatomic) NSMutableDictionary* contentToSend;
+@property (strong, nonatomic) NSMutableArray* usersInRoom;
 
 @end
 
 @implementation KJDChatRoomViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
+    
+    UIImageView *backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
+    backgroundImage.frame=self.view.frame;
+    UIView* backgroundView = [[UIView alloc] initWithFrame:self.view.frame];
+    backgroundView.backgroundColor = [UIColor blackColor];
+    [self.view addSubview:backgroundImage];
+    [self.view sendSubviewToBack:backgroundImage];
+    
+    AppDelegate* appDelegate = [UIApplication sharedApplication].delegate;
+    appDelegate.chatRoomVCDelegate = self;
+    
+    self.firstTimeInRoom = true;
+    self.chatRoom.firstTimeInRoom= true;
     self.inputTextField.delegate=self;
     [self setupViewsAndConstraints];
     self.user=self.chatRoom.user;
-    [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed) {
-        if (completed) {
-            
-            self.messages=self.chatRoom.messages; //****** esto hace q lleguen los msjes anteriores ? might have to add the contents
-            self.user=self.chatRoom.user;
-            
-            [[NSOperationQueue mainQueue]addOperationWithBlock:^{
-                
-                [self.tableView reloadData];
-            }];
-        }
-    }];
     
-    //    NSLog(@"self.messages: %@", self.messages);
+    [self.chatRoom setupFirebaseWithCompletionBlock:^(BOOL completed)
+     {
+         if (completed)
+         {
+             [self.chatRoom setUpContentFirebaseWithCompletionBlock:^(BOOL completed) {
+                 self.messages = self.chatRoom.messages;
+                 self.user = self.chatRoom.user;
+                 [[NSOperationQueue mainQueue]addOperationWithBlock:^{
+                     
+                     [self.tableView reloadData];
+                     if (![self.messages count] == 0)
+                     {
+                         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[self.messages count]-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+                     }
+                 }];
+             }];
+             
+             [self.chatRoom setUpUserCountFireBaseWithCompletionBlock:^(BOOL completedCount)
+              {
+                  self.userCount = self.chatRoom.userCount;
+                  [self setupNavigationBar];
+                  
+                  //moved to chatRoom
+              }];
+         }
+     }];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
@@ -52,14 +87,81 @@
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     
-    self.contentToSend = [[NSMutableDictionary alloc] init];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(dismissKeyboard)];
-    tap.cancelsTouchesInView = NO;
+    tap.cancelsTouchesInView = YES;
     [self.view addGestureRecognizer:tap];
     
 }
+
+-(void)didMoveToParentViewController:(UIViewController *)parent
+{
+    if (![parent isEqual:self.parentViewController])
+    {
+        [self removeUserFromChatRoom];
+    }
+}
+
+-(void)removeUserFromChatRoom
+{
+    //do your stuff
+    //but don't forget to dismiss the viewcontroller
+    NSInteger integerCount = [self.chatRoom.userCount integerValue] - 1;
+    self.chatRoom.userCount = [NSNumber numberWithInteger:integerCount];
+    
+    self.userCount = self.chatRoom.userCount;
+    [self.chatRoom.userCountFireBase onDisconnectSetValue:@{@"userCount":self.userCount}];
+    [self.chatRoom.userCountFireBase setValue:@{@"userCount":self.userCount}];
+    
+    if ([self.userCount isEqual:@0])
+    {
+        [self.chatRoom.firebase onDisconnectRemoveValue];
+        [self.chatRoom.firebase removeValue];
+    }
+}
+
+
+
+
+    /*
+     To ensure that when everybody leaves, chat room is deleted.
+     potential problem: triggered when map opened
+     ======
+     potential solution:
+     
+     Another solution is to add a custom responder to the back button. You can modify your viewController's init method as follow:
+     
+     - (id)init {
+     if (self = [super init]) {
+     //other your stuff goes here
+     //...
+     //here we customize the target and action for the backBarButtonItem
+     //every navigationController has one of this item automatically configured to pop back
+     self.navigationItem.backBarButtonItem.target = self;
+     self.navigationItem.backBarButtonItem.action = @selector(backButtonDidPressed:);
+     }
+     return self;
+     }
+     
+     
+     and then you can use a selector method as the following. Be sure to dismiss correctly the viewController, otherwise your navigation controller won't pop as wanted.
+     
+     - (void)backButtonDidPressed:(id)aResponder {
+     //do your stuff
+     //but don't forget to dismiss the viewcontroller
+     [self.navigationController popViewControllerAnimated:TRUE];
+     }
+     ======
+     
+     count = count -1
+     
+     firebase set value count
+     
+     if count ==0, firebase remove
+     
+     */
+
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
@@ -128,16 +230,97 @@
     [self setupTextField];
     [self setupSendButton];
     [self setupMediaButton];
+    [self setUpSettingsButton];
 }
 
 -(void)setupNavigationBar{
-    self.navigationItem.title=self.chatRoom.firebaseRoomURL;
-    //    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
-    //                                                  forBarMetrics:UIBarMetricsDefault];
-    //    self.navigationController.navigationBar.shadowImage = [UIImage new];
+//    self.navigationItem.title=self.chatRoom.firebaseRoomURL;
+    
+
+
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
+                             forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
     self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.view.backgroundColor = [UIColor whiteColor];
+
+    self.navigationItem.backBarButtonItem.enabled = YES;
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
+    //form stackOF
+    // Replace titleView
+    CGRect headerTitleSubtitleFrame = self.navigationController.navigationBar.frame;
+    UIView* headerTitleSubtitleView = [[UILabel alloc] initWithFrame:headerTitleSubtitleFrame];
+    headerTitleSubtitleView.backgroundColor = [UIColor clearColor];
+    headerTitleSubtitleView.autoresizesSubviews = YES;
+    
+    CGRect titleFrame = CGRectMake(0, 2, 200, 24);
+    UILabel *titleView = [[UILabel alloc] initWithFrame:titleFrame];
+    titleView.backgroundColor = [UIColor clearColor];
+    titleView.font = [UIFont boldSystemFontOfSize:20];
+    titleView.textAlignment = UITextAlignmentCenter;
+    titleView.textColor = [UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1.0];
+//    titleView.shadowColor = [UIColor darkGrayColor];
+//    titleView.shadowOffset = CGSizeMake(0, -1);
+    titleView.text = self.chatRoom.firebaseRoomURL;
+    titleView.adjustsFontSizeToFitWidth = YES;
+    [headerTitleSubtitleView addSubview:titleView];
+    
+    CGRect subtitleFrame = CGRectMake(0, 24, 200, 44-24);
+    self.subtitleView = [[UILabel alloc] initWithFrame:subtitleFrame];
+    self.subtitleView.backgroundColor = [UIColor clearColor];
+    self.subtitleView.font = [UIFont boldSystemFontOfSize:13];
+    self.subtitleView.textAlignment = UITextAlignmentCenter;
+    self.subtitleView.textColor = [UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1.0];
+    self.subtitleView.shadowColor = [UIColor darkGrayColor];
+//    self.subtitleView.shadowOffset = CGSizeMake(0, -1);
+    [self setUserCountInSubtitle];
+    self.subtitleView.adjustsFontSizeToFitWidth = YES;
+    [headerTitleSubtitleView addSubview:self.subtitleView];
+    
+    headerTitleSubtitleView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
+                                                 UIViewAutoresizingFlexibleRightMargin |
+                                                 UIViewAutoresizingFlexibleTopMargin |
+                                                 UIViewAutoresizingFlexibleBottomMargin);
+    
+    self.navigationItem.titleView = headerTitleSubtitleView;
+}
+
+-(void) setUserCountInSubtitle
+{
+    if (! self.userCount)
+    {
+        self.subtitleView.text = [NSString stringWithFormat:@""];
+    }
+    else if ([self.userCount isEqualToValue:@1] || [self.userCount isEqualToValue:@0])
+    {
+        self.subtitleView.text = [NSString stringWithFormat:@"No one else in this room"];
+    }
+    else
+    {
+        self.subtitleView.text = [NSString stringWithFormat:@"%@ users in this room", self.userCount];
+    }
+}
+
+-(void) setUpSettingsButton
+{
+    UIBarButtonItem *rightButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"settings18"] style:UIBarButtonItemStylePlain target:self action:@selector(settingsButtonTapped)];
+    rightButton.tintColor = [UIColor blackColor];
+    self.navigationItem.rightBarButtonItem = rightButton;
+}
+
+-(void) settingsButtonTapped
+{
+    
+}
+
+-(void) setHeaderTitle:(NSString*)headerTitle andSubtitle:(NSString*)headerSubtitle {
+    assert(self.navigationItem.titleView != nil);
+    UIView* headerTitleSubtitleView = self.navigationItem.titleView;
+    UILabel* titleView = [headerTitleSubtitleView.subviews objectAtIndex:0];
+    UILabel* subtitleView = [headerTitleSubtitleView.subviews objectAtIndex:1];
+    assert((titleView != nil) && (subtitleView != nil) && ([titleView isKindOfClass:[UILabel class]]) && ([subtitleView isKindOfClass:[UILabel class]]));
+    titleView.text = headerTitle;
+    subtitleView.text = headerSubtitle;
 }
 
 - (void)setupTableView
@@ -150,26 +333,32 @@
     self.tableView.dataSource = self;
     self.tableView.separatorColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
-    self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
+//    self.tableView.backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"background"]];
     [self.view sendSubviewToBack:self.tableView.backgroundView];
     self.tableView.clipsToBounds=YES;
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
-//    self.cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 57)];
-//    [self.tableView addSubview:self.cell];
+    
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomTableViewCellLeft" bundle:nil] forCellReuseIdentifier:@"normalCellLeft"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomTableViewCellRight" bundle:nil] forCellReuseIdentifier:@"normalCellRight"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomImageCellLeft" bundle:nil] forCellReuseIdentifier:@"imageCellLeft"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"KJDChatRoomImageCellRight" bundle:nil] forCellReuseIdentifier:@"imageCellRight"];
+    
     self.tableView.scrollEnabled=YES;
     
+    NSLog(@" titleView height : %f", self.navigationItem.titleView.frame.size.height);
+    NSLog(@" navbar height : %f", self.navigationController.navigationBar.frame.size.height);
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
     NSLayoutConstraint *tableViewTop = [NSLayoutConstraint constraintWithItem:self.tableView
                                                                     attribute:NSLayoutAttributeTop
                                                                     relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.navigationItem.titleView
-                                                                    attribute:NSLayoutAttributeBottom
+                                                                       toItem:self.view
+                                                                    attribute:NSLayoutAttributeTop
                                                                    multiplier:1.0
-                                                                     constant:0.0];
+                                                                     constant:self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height];
     
     NSLayoutConstraint *tableViewBottom = [NSLayoutConstraint constraintWithItem:self.tableView
+                                           
                                                                        attribute:NSLayoutAttributeBottom
                                                                        relatedBy:NSLayoutRelationEqual
                                                                           toItem:self.view
@@ -199,24 +388,28 @@
 
 - (void)sendButtonTapped{
     self.sendButton.backgroundColor=[UIColor colorWithRed:0.016 green:0.341 blue:0.22 alpha:1];
+
 }
 
--(void)sendButtonNormal{
+-(void)sendButtonNormal
+{
+    [self dismissKeyboard];
     if (![self.inputTextField.text isEqualToString:@""] && ![self.inputTextField.text isEqualToString:@" "]) {
         NSString *message = self.inputTextField.text;
         self.sendButton.titleLabel.textColor=[UIColor grayColor];
-        [self.chatRoom.firebase setValue:@{@"user":self.user.name,
-                                           @"message":message}];
+        [self.chatRoom.contentFireBase setValue:@{@"user":self.user.name,
+                                           @"message":message
+                                           }];
         self.inputTextField.text = @"";
     }
-    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.sendButton.backgroundColor=[UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1];
     self.sendButton.titleLabel.textColor=[UIColor whiteColor];
 }
 
 - (void)setupSendButton{
     self.sendButton = [[UIButton alloc] init];
     [self.view addSubview:self.sendButton];
-    self.sendButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.sendButton.backgroundColor=[UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1];
     self.sendButton.layer.cornerRadius=10.0f;
     self.sendButton.layer.masksToBounds=YES;
     [self.sendButton setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Send" attributes:nil] forState:UIControlStateNormal];
@@ -265,10 +458,11 @@
 -(void)setupMediaButton{
     self.mediaButton = [[UIButton alloc] init];
     [self.view addSubview:self.mediaButton];
-    self.mediaButton.backgroundColor = [UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
-    [self.mediaButton setAttributedTitle :[[NSAttributedString alloc] initWithString:@"M"
-                                                                          attributes:nil]
-                                 forState:UIControlStateNormal];
+    self.mediaButton.backgroundColor = [UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1];
+    [self.mediaButton setImage:[UIImage imageNamed:@"photo-abstract-7"] forState:UIControlStateNormal];
+//    [self.mediaButton setAttributedTitle :[[NSAttributedString alloc] initWithString:@"M"
+//                                                                          attributes:nil]
+//                                 forState:UIControlStateNormal];
     [self.mediaButton addTarget:self action:@selector(mediaButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     self.mediaButton.titleLabel.textColor = [UIColor whiteColor];
     self.mediaButton.layer.cornerRadius=10.0f;
@@ -314,7 +508,7 @@
     [self.view addSubview:self.inputTextField];
     self.inputTextField.layer.cornerRadius=10.0f;
     self.inputTextField.layer.masksToBounds=YES;
-    UIColor *borderColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    UIColor *borderColor=[UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1];
     self.inputTextField.layer.borderColor=[borderColor CGColor];
     self.inputTextField.layer.borderWidth=1.5f;
     self.inputTextField.backgroundColor=[UIColor clearColor];
@@ -370,57 +564,44 @@
     }];
 }
 
--(NSString *)imageToNSString:(UIImage *)image{
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.1); //UIImagePNGRepresentation(image);
+-(NSString *)imageToNSString:(UIImage *)image
+{
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.1);
+
     return [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
--(NSString*)videoToNSString:(NSURL*)video{
+-(NSString*)videoToNSString:(NSURL*)video
+{
     NSData* videoData =[NSData dataWithContentsOfURL:video options:NSDataReadingMappedAlways error:nil];
+    
     return [videoData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
--(UIImage *)stringToUIImage:(NSString *)string{
+-(UIImage *)stringToUIImage:(NSString *)string
+{
     NSData *data = [[NSData alloc]initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    
     return [UIImage imageWithData:data];
 }
 
--(MPMoviePlayerController*)stringToVideo:(NSString*)string{
-    
+-(MPMoviePlayerController*)stringToVideo:(NSString*)string
+{
     NSData* videoData = [[NSData alloc] initWithBase64EncodedString:string options:NSDataBase64DecodingIgnoreUnknownCharacters];
-    
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *tempPath = [documentsDirectory stringByAppendingFormat:@"/vid1.mp4"];
     
     BOOL success = [videoData writeToFile:tempPath atomically:NO];
-    NSLog(@"write to file success: %d", success);
     
     NSURL* pathURL = [[NSURL alloc] initFileURLWithPath:tempPath];
     
     MPMoviePlayerController* player = [[MPMoviePlayerController alloc]initWithContentURL:pathURL];
     
-    //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(btnDone_Press) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
-    
     player.shouldAutoplay = NO;
     
     return player;
-    
-    //alternative - more to reproduce a video ; would need to know where a video is stored when saved.
-    
-    /*
-     NSString *moviePath = [[info objectForKey:
-     UIImagePickerControllerMediaURL] path];
-     if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum (moviePath))
-     {
-     UISaveVideoAtPathToSavedPhotosAlbum (moviePath,self, @selector(video:didFinishSavingWithError:contextInfo:), nil);
-     }
-     
-     //for obtaining filePath, consider also:
-     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"vid" ofType:@"mp4"];
-     
-     */
 }
 
 -(BOOL)systemVersionLessThan8
@@ -434,7 +615,7 @@
 {
     NSString* photoInString = [self imageToNSString:map];
     
-    [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+    [self.chatRoom.contentFireBase setValue:@{@"user":self.user.name,
                                        @"image":photoInString}];
 }
 
@@ -448,9 +629,9 @@
     {
         UIImage* extractedPhoto = [info valueForKey:UIImagePickerControllerOriginalImage];
         NSString* photoInString = [self imageToNSString:extractedPhoto];
-        [self.contentToSend setObject:photoInString forKey:@"image"]; //innecesario
+
         
-        [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+        [self.chatRoom.contentFireBase setValue:@{@"user":self.user.name,
                                            @"image":photoInString}];
         
     }
@@ -460,7 +641,7 @@
         NSURL* videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
         NSString* videoInString = [self videoToNSString:videoURL];
         
-        [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+        [self.chatRoom.contentFireBase setValue:@{@"user":self.user.name,
                                            @"video":videoInString}];
     }
     
@@ -508,8 +689,6 @@
             
         }];
     }
-    
-    
 }
 
 -(void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -528,12 +707,6 @@
     NSArray *mediaTypesAllowed = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
     imagePicker.mediaTypes = mediaTypesAllowed;
     
-    //seems to be unnecessary
-    //    if (sourceType == UIImagePickerControllerSourceTypeCamera)
-    //    {
-    //        imagePicker.mediaTypes = [[NSArray alloc] initWithObjects:(NSString*)kUTTypeMovie, kUTTypeImage, nil];
-    //    }
-    
     imagePicker.delegate = self;
     [self presentViewController:imagePicker
                        animated:YES
@@ -547,115 +720,145 @@
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-    NSMutableDictionary *content=self.messages[indexPath.row];
-    if (content[@"video"] || content[@"image"] || content[@"map"])
-    {
-        return 200;
+ 
+    if (![self.messages count]==0) {
+        NSMutableDictionary *message=self.messages[indexPath.row];
+        if ([message objectForKey:@"message"]!=nil) {
+            NSDictionary *message=self.messages[indexPath.row];
+            NSString * yourText = message[@"message"]; // or however you are getting the text
+            return 51 + [self heightForText:yourText];
+        }else{
+            return 180;
+        }
     }
-    else
-    {
-        return 70;
-    }
+    return 0;
+}
+
+//from jan
+- (void)textViewDidChange:(UITextView *)textView
+{
+    CGFloat fixedWidth = textView.frame.size.width;
+    CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
+    CGRect newFrame = textView.frame;
+    newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
+    textView.frame = newFrame;
+}
+
+//from jan
+-(CGFloat)heightForText:(NSString *)text
+{
+    NSInteger MAX_HEIGHT = 2000;
+    UITextView * textView = [[UITextView alloc] initWithFrame: CGRectMake(0, 0, self.tableView.frame.size.width, MAX_HEIGHT)];
+    textView.text = text;
+    textView.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14];
+    [textView sizeToFit];
+    return textView.frame.size.height;
+}
+
+//from Jan
+- (CGFloat)textViewHeightForAttributedText: (NSAttributedString*)text andWidth: (CGFloat)width {
+    UITextView *calculationView = [[UITextView alloc] init];
+    [calculationView setAttributedText:text];
+    CGSize size = [calculationView sizeThatFits:CGSizeMake(width, FLT_MAX)];
+    return size.height;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
-    
-    //    self.cell=[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    //    self.cell.userMessageLabel.lineBreakMode=NSLineBreakByWordWrapping;
-    //    self.cell.userMessageLabel.numberOfLines=0;
-    //    self.cell.userInteractionEnabled=NO;
-    //    self.cell.backgroundColor=[UIColor clearColor];
-    
-    cell.userInteractionEnabled=NO;
-    
-    //
     NSDictionary *content=self.messages[indexPath.row];
     
         
         if (content[@"video"])
         {
-            cell.userInteractionEnabled=YES;
             MPMoviePlayerController* player = [self stringToVideo:content[@"video"]];
             
             self.playerController = player;
             
             UIImage *thumbnail = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionNearestKeyFrame];
             
-            
-            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
-            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
-            
-            
-            if ([content[@"user"] isEqualToString:self.user.name])
-            {
-                [player.view setFrame:CGRectMake(cell.contentView.frame.size.width/2 -4 , cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
+            if ([content[@"user"] isEqualToString:self.user.name]) {
+                KJDChatRoomImageCellRight *rightCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellRight"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
+                
+                rightCell.usernameLabel.attributedText=muAtrStr;
+                rightCell.backgroundColor=[UIColor clearColor];
+                [rightCell.mediaImageView setBackgroundColor:[UIColor clearColor]];
+                
+                NSLog(@"cell content view subviws BEFORE: %@", rightCell.contentView.subviews);
+                [rightCell.mediaImageView removeFromSuperview];
+                                NSLog(@"cell content view subviws AFTER: %@", rightCell.contentView.subviews);
+                
+                player.view .frame = CGRectMake(170, 30, 141, 142);
+                if ([rightCell.contentView.subviews count] == 1)
+                {
+                    [rightCell.contentView addSubview:player.view];
+                }
+                
+                player.scalingMode = MPMovieScalingModeAspectFit;
+                [player setControlStyle:MPMovieControlStyleDefault];
+                player.repeatMode = MPMovieRepeatModeNone;
+                [player play];
+                
+                return rightCell;
             }
             else
             {
-                [player.view setFrame:CGRectMake(cell.contentView.frame.origin.x + 4, cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
+                KJDChatRoomImageCellLeft *leftCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellLeft"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
+
+                leftCell.usernameLabel.attributedText=muAtrStr;
+                leftCell.backgroundColor=[UIColor clearColor];
+                [leftCell.mediaImageView setBackgroundColor:[UIColor clearColor]];
+                
+                [leftCell.mediaImageView removeFromSuperview];
+                
+                player.view .frame = CGRectMake(8, 30, 141, 142);
+                
+                if ([leftCell.contentView.subviews count] == 1)
+                {
+                    [leftCell.contentView addSubview:player.view];
+                }
+                
+                player.scalingMode = MPMovieScalingModeAspectFit;
+                [player setControlStyle:MPMovieControlStyleDefault];
+                player.repeatMode = MPMovieRepeatModeNone;
+                [player play];
+                
+                return leftCell;
             }
-            
-            cell.backgroundColor=[UIColor clearColor];
-            
-            player.scalingMode = MPMovieScalingModeAspectFit;
-            [player setControlStyle:MPMovieControlStyleDefault];
-            player.repeatMode = MPMovieRepeatModeNone;
-            
-            if ([cell.contentView.subviews count] == 0)
-            {
-                [cell.contentView addSubview:player.view];
-            }
-            
-            
-            //
-            //            [[NSNotificationCenter defaultCenter] addObserver:self
-            //                                                     selector:@selector(moviePlayerDidFinish:)
-            //                                                         name:MPMoviePlayerPlaybackDidFinishNotification
-            //                                                       object:self.playerController];
-            
-            
-            
-            [player play];
         }
-        else if (content[@"map"])
+         if (content[@"map"])
         {
-            cell.userInteractionEnabled=YES;
             NSString* imageInCode = content[@"map"];
             UIImage* imageToDisplay = [self stringToUIImage:imageInCode];
             
-            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
-            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
-            
-            
-            
             if ([content[@"user"] isEqualToString:self.user.name])
             {
-                cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
+                KJDChatRoomImageCellRight *rightCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellRight"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
                 
-                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width/2 -4 , cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
-                imageDisplay.image = imageToDisplay;
+                rightCell.usernameLabel.attributedText=muAtrStr;
+                rightCell.backgroundColor=[UIColor clearColor];
+                rightCell.mediaImageView.image=imageToDisplay;
                 
-                if ([cell.contentView.subviews count] == 0)
-                {
-                    [cell.contentView addSubview:imageDisplay];
-                }
+                return rightCell;
             }
             else
             {
-                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.origin.x + 4, cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height-4)];
-                imageDisplay.image = imageToDisplay;
+                KJDChatRoomImageCellLeft *leftCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellLeft"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
                 
-                if ([cell.contentView.subviews count] == 0)
-                {
-                    [cell.contentView addSubview:imageDisplay];
-                }
+                leftCell.usernameLabel.attributedText=muAtrStr;
+                leftCell.backgroundColor=[UIColor clearColor];
+                leftCell.mediaImageView.image=imageToDisplay;
+                
+                return leftCell;
             }
-            
-            cell.backgroundColor=[UIColor clearColor];
         }
         else if (content[@"image"])
         {
@@ -663,63 +866,67 @@
             NSString* imageInCode = content[@"image"];
             UIImage* imageToDisplay = [self stringToUIImage:imageInCode];
             
-            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 200);
-            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
-            
             if ([content[@"user"] isEqualToString:self.user.name])
             {
+                KJDChatRoomImageCellRight *rightCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellRight"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
                 
-                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width/2 -4 , cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height -4)];
-                imageDisplay.image = imageToDisplay;
+                rightCell.usernameLabel.attributedText=muAtrStr;
+                rightCell.backgroundColor=[UIColor clearColor];
+                rightCell.mediaImageView.image=imageToDisplay;
                 
-                if ([cell.contentView.subviews count] == 0)
-                {
-                    [cell.contentView addSubview:imageDisplay];
-                }
+                return rightCell;
             }
             else
             {
-                UIImageView* imageDisplay = [[UIImageView alloc] initWithFrame:CGRectMake(cell.contentView.frame.origin.x + 4, cell.contentView.frame.origin.y +4, cell.contentView.frame.size.width/2, cell.contentView.frame.size.height-4)];
-                imageDisplay.image = imageToDisplay;
+                KJDChatRoomImageCellRight *leftCell=[tableView dequeueReusableCellWithIdentifier:@"imageCellLeft"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
                 
-                if ([cell.contentView.subviews count] == 0)
-                {
-                    [cell.contentView addSubview:imageDisplay];
-                }
-            }
-            
-            cell.backgroundColor=[UIColor clearColor];
+                leftCell.usernameLabel.attributedText=muAtrStr;
+                leftCell.backgroundColor=[UIColor clearColor];
+                leftCell.mediaImageView.image=imageToDisplay;
+                
+                return leftCell;
+           }
         }
         else if (content[@"message"])
         {
-            cell.frame = CGRectMake(0, 0, cell.frame.size.width, 70);
-            cell.contentView.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height);
-            
             NSString *messageTyped=[NSString stringWithFormat:@"\n%@", content[@"message"]];
-            cell.textLabel.lineBreakMode=NSLineBreakByWordWrapping;
-            cell.textLabel.numberOfLines=0;
-            NSMutableAttributedString *attributedUserName = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
-            [attributedUserName addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-BoldItalic" size:21] range:NSMakeRange(0, [attributedUserName length])];
-            
-            //
-            NSAttributedString *attributedMessage = [[NSAttributedString alloc]initWithString:messageTyped attributes:@{NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue-Light" size:24]}];
-            [attributedUserName appendAttributedString:attributedMessage];
-            cell.textLabel.attributedText=attributedUserName;
-            cell.backgroundColor=[UIColor clearColor];
-            
             if ([content[@"user"] isEqualToString:self.user.name])
             {
-                cell.textLabel.textAlignment=NSTextAlignmentRight;
-                cell.textLabel.textAlignment=NSTextAlignmentRight;
+                KJDChatRoomTableViewCellRight *rightCell=[tableView dequeueReusableCellWithIdentifier:@"normalCellRight"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:self.user.name];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
                 
-                //            self.cell.usernameLabel.text=self.user.name;
-                //            self.cell.userMessageLabel.text=message[@"message"];
-                //            self.cell.usernameLabel.textAlignment=NSTextAlignmentRight;
-                //            self.cell.userMessageLabel.textAlignment=NSTextAlignmentRight;
+                rightCell.usernameLabel.attributedText = muAtrStr;
+                rightCell.usernameLabel.textAlignment = NSTextAlignmentRight;
+                rightCell.backgroundColor=[UIColor clearColor];
+                rightCell.userMessageTextView.text=messageTyped;
+                rightCell.userMessageTextView.textAlignment=NSTextAlignmentRight;
+                rightCell.userMessageTextView.backgroundColor=[UIColor clearColor];
+                [rightCell.userMessageTextView sizeToFit];
+                [rightCell.userMessageTextView layoutIfNeeded];
                 
+                return rightCell;
+            }
+            else
+            {
+                KJDChatRoomTableViewCellLeft *leftCell=[tableView dequeueReusableCellWithIdentifier:@"normalCellLeft"];
+                NSMutableAttributedString *muAtrStr = [[NSMutableAttributedString alloc]initWithString:content[@"user"]];
+                [muAtrStr addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-MediumItalic" size:15] range:NSMakeRange(0, [muAtrStr length])];
+                leftCell.backgroundColor=[UIColor clearColor];
+                leftCell.usernameLabel.attributedText=muAtrStr;
+                leftCell.userMessageTextView.text=messageTyped;
+                leftCell.userMessageTextView.backgroundColor=[UIColor clearColor];
+                [leftCell.userMessageTextView sizeToFit];
+                [leftCell.userMessageTextView layoutIfNeeded];
+                
+                return leftCell;
             }
         }
-    return cell;
+    return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -731,8 +938,8 @@
     
     if (content[@"map"])
     {
+        //fix this!!!!!!!
         UITableViewCell* mapCell = [self.tableView cellForRowAtIndexPath:indexPath];
-        
         
         KJDImageDisplayViewController* imageDisplayVC = [[KJDImageDisplayViewController alloc]init];
         
@@ -745,20 +952,5 @@
         }];
     }
 }
-
-
-//- (void)moviePlayerDidFinish:(NSNotification *)note
-//{
-//    if (note.object == self.playerController)
-//    {
-//        NSInteger reason = [[note.userInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey] integerValue];
-//        if (reason == MPMovieFinishReasonPlaybackEnded)
-//        {
-//            NSLog(@"sfsdff");
-//            [self.playerController prepareToPlay];
-//            
-//        }
-//    }
-//}
 
 @end

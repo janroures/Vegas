@@ -34,12 +34,18 @@
     {
         self.user =[[KJDUser alloc]initWithRandomName];
     }
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(dismissKeyboard)];
+    tap.cancelsTouchesInView = NO;
+    [self.view addGestureRecognizer:tap];
 }
-//
-//-(void)viewWillAppear:(BOOL)animated{
-//    self.navigationController.navigationBarHidden = YES;
-//}
--(BOOL) textFieldShouldReturn:(UITextField *)textField{
+
+-(void)dismissKeyboard {
+    [self.chatCodeField resignFirstResponder];
+}
+
+-(BOOL) textFieldShouldReturn:(UITextField *)textField
+{
     [textField resignFirstResponder];
     if ([self.chatCodeField.text length]<4) {
         RNBlurModalView *modal = [[RNBlurModalView alloc] initWithViewController:self title:@"Invalid Chat ID!" message:@"The code must be at least 4 characters long"];
@@ -66,7 +72,7 @@
 - (void)setupLabel{
     self.enterLabel = [[UILabel alloc] init];
     [self.view addSubview:self.enterLabel];
-    self.enterLabel.text = @"Enter Chat ID";
+    self.enterLabel.text = @"Enter Chatroom ID";
     self.enterLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.enterLabel setTextAlignment:NSTextAlignmentCenter];
     
@@ -142,7 +148,7 @@
                                                                           relatedBy:NSLayoutRelationEqual
                                                                              toItem:self.enterLabel
                                                                           attribute:NSLayoutAttributeWidth
-                                                                         multiplier:0.66
+                                                                         multiplier:1.5
                                                                            constant:0.0];
     
     NSLayoutConstraint *chatCodeFieldHeight = [NSLayoutConstraint constraintWithItem:self.chatCodeField
@@ -163,7 +169,7 @@
     [self.enterButton setTitle:@"Enter Chat" forState:UIControlStateNormal];
     self.enterButton.layer.cornerRadius=10.0f;
     self.enterButton.layer.masksToBounds=YES;
-    self.enterButton.backgroundColor = [UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.enterButton.backgroundColor = [UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1];
     [self.enterButton addTarget:self action:@selector(enterButtonTappedForBackground) forControlEvents:UIControlEventTouchDown];
     [self.enterButton addTarget:self action:@selector(enterButtonReleased) forControlEvents:UIControlEventTouchUpInside];
     self.enterButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -187,9 +193,9 @@
     NSLayoutConstraint *enterButtonWidth = [NSLayoutConstraint constraintWithItem:self.enterButton
                                                                         attribute:NSLayoutAttributeWidth
                                                                         relatedBy:NSLayoutRelationEqual
-                                                                           toItem:self.chatCodeField
+                                                                           toItem:self.enterLabel
                                                                         attribute:NSLayoutAttributeWidth
-                                                                       multiplier:1.0
+                                                                       multiplier:0.66
                                                                          constant:0.0];
     
     NSLayoutConstraint *enterButtonHeight = [NSLayoutConstraint constraintWithItem:self.enterButton
@@ -204,7 +210,7 @@
 }
 
 -(void)enterButtonReleased{
-    self.enterButton.backgroundColor=[UIColor colorWithRed:0.027 green:0.58 blue:0.373 alpha:1];
+    self.enterButton.backgroundColor=[UIColor colorWithRed:(4/255.0f) green:(74/255.0f) blue:(11/255.0f) alpha:1];
     if ([self.chatCodeField.text length]<4) {
         RNBlurModalView *modal = [[RNBlurModalView alloc] initWithViewController:self title:@"Invalid Chat ID!" message:@"The code must be at least 4 characters long"];
         [modal show];

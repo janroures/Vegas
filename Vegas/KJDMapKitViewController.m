@@ -204,13 +204,14 @@
 {
     NSString* photoInString = [self imageToNSString:map];
     
-    [self.chatRoom.firebase setValue:@{@"user":self.user.name,
+    [self.chatRoom.contentFireBase setValue:@{@"user":self.user.name,
                                        @"map":photoInString}];
 }
 -(NSString *)imageToNSString:(UIImage *)image{
     NSData *imageData = UIImageJPEGRepresentation(image, 0.1); //UIImagePNGRepresentation(image);
     return [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
+
 
 -(void)yesButtonNormal
 {

@@ -21,11 +21,13 @@
 @property(strong,nonatomic)KJDUser *user;
 @property(strong,nonatomic)NSString *firebaseRoomURL;
 @property(strong,nonatomic)NSString *firebaseURL;
-@property(strong,nonatomic)KJDChatRoom *chatRoom;
+@property(weak,nonatomic)KJDChatRoom *chatRoom;
 @property(strong,nonatomic)UITableViewCell *cell;
+@property(strong,nonatomic)NSNumber* userCount;
+@property(nonatomic)BOOL firstTimeInRoom;
 
 -(void) sendMapImage:(UIImage*)map;
-
+-(void)removeUserFromChatRoom;
 
 
 @end

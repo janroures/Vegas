@@ -7,8 +7,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell autoresizesSubviews="NO" contentMode="scaleAspectFit" selectionStyle="default" indentationWidth="10" rowHeight="49" id="RhR-Qp-uBm" customClass="KJDChatRoomTableViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="252" height="57"/>
+        <tableViewCell autoresizesSubviews="NO" contentMode="scaleAspectFit" selectionStyle="default" indentationWidth="10" rowHeight="62" id="RhR-Qp-uBm" customClass="KJDChatRoomTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="252" height="70"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="RhR-Qp-uBm" id="hOJ-CX-Nvc">
                 <autoresizingMask key="autoresizingMask"/>
@@ -31,7 +31,7 @@
                 <outlet property="userMessageLabel" destination="eGQ-oG-7Ce" id="YA0-kr-Ift"/>
                 <outlet property="usernameLabel" destination="uPy-gu-mxO" id="jAU-Li-0yy"/>
             </connections>
-            <point key="canvasLocation" x="489" y="354.5"/>
+            <point key="canvasLocation" x="489" y="348"/>
         </tableViewCell>
     </objects>
 </document>
